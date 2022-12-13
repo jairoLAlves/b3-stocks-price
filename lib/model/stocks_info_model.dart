@@ -10,7 +10,7 @@ class StocksInfoModel {
     if (json['results'] != null) {
       results = <StockInfoModel>[];
       json['results'].forEach((v) {
-        results!.add(new StockInfoModel.fromJson(v));
+        results!.add(StockInfoModel.fromJson(v));
       });
     }
     requestedAt = json['requestedAt'];

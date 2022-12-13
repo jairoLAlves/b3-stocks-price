@@ -1,3 +1,4 @@
+import 'package:b3_price_stocks/model/historical_data_price.dart';
 import 'package:b3_price_stocks/model/stock.dart';
 import 'package:b3_price_stocks/providers/stocks_provider.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,22 @@ import 'package:provider/provider.dart';
 
 import '../util/enums.dart';
 import 'package:collection/collection.dart';
+
+extension GetListNumFilter on List<HistoricalDataPrice> {
+  List<num> getListNumFilter(PriceTipes  priceTipes ) {
+    switch (priceTipes) {
+      case PriceTipes.close:
+        return map((numero) => numero.close ?? 0).toList();
+      case PriceTipes.open:
+       return map((numero) => numero.open ?? 0).toList();
+      case PriceTipes.high:
+        return map((numero) => numero.high ?? 0).toList();
+      case PriceTipes.low:
+        return map((numero) => numero.low ?? 0).toList();
+    }
+
+  }
+}
 
 extension SortOrderStocks on List<Stock> {
   void sortOrderStocks(StocksSortBy stocksSortBy, {bool sortOrder = true}) {

@@ -24,6 +24,13 @@ enum sectors {
   All,
 }
 
+enum PriceTipes {
+  open,
+  high,
+  low,
+  close,
+}
+
 enum StocksSortBy {
   name,
   close,

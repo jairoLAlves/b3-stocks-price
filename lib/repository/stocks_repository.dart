@@ -25,14 +25,25 @@ class StocksRepository implements IStocks {
 
   @override
   Future<StocksInfoModel> getAllStocksInfo(
-      {required String symbol,
-      ValidRangesEnum range = ValidRangesEnum.ten_y,
+      {required List<String> symbols,
+      ValidRangesEnum range = ValidRangesEnum.one_m,
       ValidRangesEnum interval = ValidRangesEnum.one_d,
       bool fundamental = true}) async {
-    final Response respnse = await http.get(Uri.parse(
-        '$_baseUrl/${symbol.toUpperCase()}?range=${getValidRangeString(range)}&interval=${getValidRangeString(interval)}&fundamental=$fundamental'));
+    final sizeListS = symbols.length;
 
-    final Map<String, dynamic> stocksInfo = jsonDecode(respnse.body);
+    String symbolList = '';
+    symbols.forEach((symbol) {
+      bool islast = symbols.last != symbol;
+      symbolList +=
+          islast ? symbol.toUpperCase() + '%2C' : symbol.toUpperCase();
+    });
+
+    final Response response = await http.get(Uri.parse(
+        '$_baseUrl/${symbolList}?range=${getValidRangeString(range)}&interval=${getValidRangeString(interval)}&fundamental=$fundamental'));
+
+    //print(response);
+    final Map<String, dynamic> stocksInfo = jsonDecode(response.body);
+    //print(stocksInfo);
 
     return StocksInfoModel.fromJson(stocksInfo);
   }

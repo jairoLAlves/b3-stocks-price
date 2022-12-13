@@ -5,8 +5,10 @@ import '../util/enums.dart';
 abstract class IStocks {
   Future<Stocks> getAllStocks();
   Future<StocksInfoModel> getAllStocksInfo(
-      {required String symbol,
-      ValidRangesEnum range = ValidRangesEnum.one_d,
-      ValidRangesEnum interval = ValidRangesEnum.one_m,
+      {required List<String> symbols,
+      //Intervalo de preços históricos
+      ValidRangesEnum range = ValidRangesEnum.one_m,
+      //Intervalo para obter preços históricos dentro do intervalo
+      ValidRangesEnum interval = ValidRangesEnum.one_d,
       bool fundamental = true});
 }
