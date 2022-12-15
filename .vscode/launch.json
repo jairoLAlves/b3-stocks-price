@@ -5,6 +5,12 @@
     "version": "0.2.0",
     "configurations": [
       {
+        "name": "DartTest",
+        "type": "dart",
+        "request": "launch",
+        "program": "test/widget_repository_test.dart"
+      },
+      {
         "name": "Flutter: Attach to Device",
         "type": "dart",
         "request": "attach"

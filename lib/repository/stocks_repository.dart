@@ -24,27 +24,33 @@ class StocksRepository implements IStocks {
   }
 
   @override
-  Future<StocksInfoModel> getAllStocksInfo(
-      {required List<String> symbols,
-      ValidRangesEnum range = ValidRangesEnum.one_m,
-      ValidRangesEnum interval = ValidRangesEnum.one_d,
-      bool fundamental = true}) async {
-    final sizeListS = symbols.length;
-
+  Future<StocksInfoModel> getAllStocksInfo({
+    required List<String> symbols,
+    ValidRangesEnum range = ValidRangesEnum.one_m,
+    ValidRangesEnum interval = ValidRangesEnum.one_d,
+    bool fundamental = true,
+  }) async {
     String symbolList = '';
+
     symbols.forEach((symbol) {
       bool islast = symbols.last != symbol;
       symbolList +=
           islast ? symbol.toUpperCase() + '%2C' : symbol.toUpperCase();
     });
+    try {
+      final Response response = await http //
+          .get(Uri //
+              .parse(
+                  '$_baseUrl/${symbolList}?range=${getValidRangeString(range)}&interval=${getValidRangeString(interval)}&fundamental=$fundamental'));
 
-    final Response response = await http.get(Uri.parse(
-        '$_baseUrl/${symbolList}?range=${getValidRangeString(range)}&interval=${getValidRangeString(interval)}&fundamental=$fundamental'));
+      print(response.statusCode);
 
-    //print(response);
-    final Map<String, dynamic> stocksInfo = jsonDecode(response.body);
-    //print(stocksInfo);
+      //print(response);
+      final Map<String, dynamic> stocksInfo = jsonDecode(response.body);
+      //print(stocksInfo);
+      return StocksInfoModel.fromJson(stocksInfo);
+    } catch (e) {}
 
-    return StocksInfoModel.fromJson(stocksInfo);
+    return StocksInfoModel();
   }
 }

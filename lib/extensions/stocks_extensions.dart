@@ -7,19 +7,47 @@ import 'package:provider/provider.dart';
 import '../util/enums.dart';
 import 'package:collection/collection.dart';
 
+extension DividirListaString on List<String> {
+  List<List<String>> dividirListaString([int step = 20]) {
+    //step numeor de vezes da divisão
+
+    var listRetorno = <List<String>>[];
+    int size = length;
+    int subDivid = (size ~/ step);
+
+    print(subDivid);
+
+    for (int index = 0; index < step; index++) {
+      if (subDivid == 0) {
+        listRetorno.add(sublist(0));
+        return listRetorno;
+      }
+
+      int start = index * subDivid;
+      int end = (index + 1) * subDivid;
+
+      var subLista =
+          (index < (step - 1)) ? sublist(start, end) : sublist(start);
+
+      if (subLista.isNotEmpty) listRetorno.add(subLista);
+    }
+
+    return listRetorno;
+  }
+}
+
 extension GetListNumFilter on List<HistoricalDataPrice> {
-  List<num> getListNumFilter(PriceTipes  priceTipes ) {
+  List<num> getListNumFilter(PriceTipes priceTipes) {
     switch (priceTipes) {
       case PriceTipes.close:
         return map((numero) => numero.close ?? 0).toList();
       case PriceTipes.open:
-       return map((numero) => numero.open ?? 0).toList();
+        return map((numero) => numero.open ?? 0).toList();
       case PriceTipes.high:
         return map((numero) => numero.high ?? 0).toList();
       case PriceTipes.low:
         return map((numero) => numero.low ?? 0).toList();
     }
-
   }
 }
 
