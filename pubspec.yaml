@@ -34,7 +34,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^0.13.5
+  #http: ^0.13.5
+  dio: ^4.0.6
   candlesticks_plus: ^1.0.9
   provider: ^6.0.4
   flutter_svg: ^1.1.6

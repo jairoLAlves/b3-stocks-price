@@ -1,12 +1,13 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:http/src/response.dart';
+import 'package:dio/dio.dart';
 import '../interfaces/stocks_interface.dart';
 import '../model/stocks.dart';
 import '../model/stocks_info_model.dart';
 import '../util/enums.dart';
 
 class StocksRepository implements IStocks {
+  final dio = Dio();
+
   final String _baseUrl = 'https://brapi.dev/api/quote';
 
   //'/api/quote/'
@@ -15,11 +16,11 @@ class StocksRepository implements IStocks {
 
   @override
   Future<Stocks> getAllStocks() async {
-    final Response respnse = await http.get(
-      Uri.parse('$_baseUrl/list'),
+    final Response respnse = await dio.get(
+      '$_baseUrl/list',
     );
 
-    final Map<String, dynamic> stocks = jsonDecode(respnse.body);
+    final Map<String, dynamic> stocks = respnse.data;
     return Stocks.fromJson(stocks);
   }
 
@@ -34,23 +35,24 @@ class StocksRepository implements IStocks {
 
     symbols.forEach((symbol) {
       bool islast = symbols.last != symbol;
-      symbolList +=
-          islast ? symbol.toUpperCase() + '%2C' : symbol.toUpperCase();
+      symbolList += islast ? symbol.toUpperCase() + ',' : symbol.toUpperCase();
     });
+
+    final String urlCompleta =
+        '$_baseUrl/${symbolList}?range=${getValidRangeString(range)}&interval=${getValidRangeString(interval)}&fundamental=$fundamental';
+
     try {
-      final Response response = await http //
-          .get(Uri //
-              .parse(
-                  '$_baseUrl/${symbolList}?range=${getValidRangeString(range)}&interval=${getValidRangeString(interval)}&fundamental=$fundamental'));
+      final response = await dio.get(urlCompleta);
 
       print(response.statusCode);
+     // print(response.data);
 
-      //print(response);
-      final Map<String, dynamic> stocksInfo = jsonDecode(response.body);
-      //print(stocksInfo);
+      Map<String, dynamic> stocksInfo = response.data;
+
       return StocksInfoModel.fromJson(stocksInfo);
-    } catch (e) {}
-
-    return StocksInfoModel();
+    } catch (e) {
+      print("Error response $e");
+      return StocksInfoModel();
+    }
   }
 }

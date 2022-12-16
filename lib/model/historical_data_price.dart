@@ -17,6 +17,8 @@ class HistoricalDataPrice {
     this.volume,
   });
 
+  
+
   HistoricalDataPrice.fromJson(Map<String, dynamic> json) {
     this.date = json['date'];
     this.open = json['open'];

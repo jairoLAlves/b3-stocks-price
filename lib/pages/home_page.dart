@@ -1,7 +1,7 @@
 import 'package:b3_price_stocks/extensions/stocks_extensions.dart';
 import 'package:b3_price_stocks/model/stock.dart';
 import 'package:b3_price_stocks/providers/stocks_provider.dart';
-import 'package:b3_price_stocks/routes/routes_pages.dart';
+//import 'package:b3_price_stocks/routes/routes_pages.dart';
 
 import 'package:flutter/material.dart';
 
@@ -18,6 +18,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late final controllerStock;
+
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
 
@@ -26,7 +28,15 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    loadList();
+    //loadList();
+    controllerStock = context.read<StocksProvider>();
+
+    controllerStock.updateStocks().then((value) {
+      setState(() {
+        isloading = false;
+        _listStocksHome = value;
+      });
+    });
 
     super.initState();
   }

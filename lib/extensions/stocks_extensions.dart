@@ -7,6 +7,18 @@ import 'package:provider/provider.dart';
 import '../util/enums.dart';
 import 'package:collection/collection.dart';
 
+extension BullOrBearList on List<double> {
+  bool? bullOrBearList() {
+    if (isNotEmpty && length >= 2) {
+      if (first == last) return null;
+
+      return (first > last) ? false : true;
+    }
+
+    return null;
+  }
+}
+
 extension DividirListaString on List<String> {
   List<List<String>> dividirListaString([int step = 20]) {
     //step numeor de vezes da divisão
@@ -15,7 +27,7 @@ extension DividirListaString on List<String> {
     int size = length;
     int subDivid = (size ~/ step);
 
-    print(subDivid);
+    //print(subDivid);
 
     for (int index = 0; index < step; index++) {
       if (subDivid == 0) {
@@ -37,17 +49,48 @@ extension DividirListaString on List<String> {
 }
 
 extension GetListNumFilter on List<HistoricalDataPrice> {
-  List<num> getListNumFilter(PriceTipes priceTipes) {
+  List<num> getListNumFilter(
+      [PriceTipes priceTipes = PriceTipes.close, bool isReversed = true]) {
+    var listaRetorno = <num>[];
+    var listaNull = <num?>[];
+
     switch (priceTipes) {
       case PriceTipes.close:
-        return map((numero) => numero.close ?? 0).toList();
+        listaNull = map((numero) {
+          return numero.close;
+        }).toList();
+
+        break;
+
       case PriceTipes.open:
-        return map((numero) => numero.open ?? 0).toList();
+        listaNull = map((numero) {
+          return numero.open;
+        }).toList();
+
+        break;
+
       case PriceTipes.high:
-        return map((numero) => numero.high ?? 0).toList();
+        listaNull = map((numero) {
+          return numero.high;
+        }).toList();
+
+        break;
+
       case PriceTipes.low:
-        return map((numero) => numero.low ?? 0).toList();
+        listaNull = map((numero) {
+          return numero.low;
+        }).toList();
+
+        break;
     }
+
+    //print(listaNull);
+
+    listaRetorno = listaNull.whereType<num>().toList();
+
+    if (isReversed) listaRetorno.reversed;
+
+    return listaRetorno;
   }
 }
 
