@@ -107,6 +107,7 @@ class _HomePageState extends State<HomePage> {
         return StatefulBuilder(
           builder: (context, setState) {
             return Container(
+              padding: const EdgeInsets.all(12),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -254,87 +255,81 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('Stocks'),
-      //   actions: <Widget>[
-      //     IconButton(
-      //       icon: const Icon(Icons.search),
-      //       onPressed: () {
-      //         Navigator.of(context).pushNamed(RoutesPages.stocksSearch);
-      //       },
-      //     ),
-      //   ],
-      // ),
-      body: Column(
-        children: [
-          Container(
-              margin: const EdgeInsets.symmetric(vertical: 28, horizontal: 2),
-              child: Card(
-                color: Colors.black12,
-                elevation: 2,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.only(bottom: 18),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TextFormField(
-                                decoration: const InputDecoration(
-                                  labelText: 'Symbol',
-                                  floatingLabelBehavior:
-                                      FloatingLabelBehavior.never,
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  border: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(25)),
-                                  ),
-                                  suffixIcon: Icon(Icons.search),
-                                ),
-                                onChanged: (value) {
-                                  if (value.isNotEmpty) {
-                                    searchStockFilter(value);
-                                  } else {
-                                    filterlist();
-                                  }
-                                },
-                              ),
-                            ),
-                            Container(
-                                child: IconButton(
-                                    onPressed: () => bottomSheet(context),
-                                    icon: Icon(Icons.settings)))
-                          ],
-                        ),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          actions: [
+            Container(
+                child: IconButton(
+                    onPressed: () => bottomSheet(context),
+                    icon: Icon(Icons.settings)))
+          ],
+          title: Container(
+            //padding: const EdgeInsets.only(bottom: 18),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: 'Symbol',
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(25)),
                       ),
-                    ],
+                      suffixIcon: Icon(Icons.search),
+                    ),
+                    onChanged: (value) {
+                      if (value.isNotEmpty) {
+                        searchStockFilter(value);
+                      } else {
+                        filterlist();
+                      }
+                    },
                   ),
                 ),
-              )),
-          Expanded(
-            child: RefreshIndicator(
-              key: _refreshIndicatorKey,
-              onRefresh: loadList,
-              child: isloading
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : ListView.builder(
-                      itemCount: _listStocksHome.length,
-                      itemBuilder: (context, index) {
-                        return ItemListStocks(
-                          stock: _listStocksHome.elementAt(index),
-                        );
-                      },
-                    ),
+              ],
             ),
           ),
-          ////
-        ],
+        ),
+        body: Column(
+          children: [
+            Container(
+                margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 2),
+                child: Card(
+                  elevation: 1,
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Column(
+                      children: [],
+                    ),
+                  ),
+                )),
+            Expanded(
+              child: RefreshIndicator(
+                key: _refreshIndicatorKey,
+                onRefresh: loadList,
+                child: isloading
+                    ? const Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : ListView.builder(
+                        itemCount: _listStocksHome.length,
+                        itemBuilder: (context, index) {
+                          Stock stock = _listStocksHome.elementAt(index);
+
+                          return ItemListStocks(
+                            key: ObjectKey(stock),
+                            stock: stock,
+                          );
+                        },
+                      ),
+              ),
+            ),
+            ////
+          ],
+        ),
       ),
     );
   }

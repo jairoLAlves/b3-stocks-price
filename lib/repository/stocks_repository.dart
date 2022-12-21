@@ -6,9 +6,14 @@ import '../model/stocks_info_model.dart';
 import '../util/enums.dart';
 
 class StocksRepository implements IStocks {
-  final dio = Dio();
+  static String _baseUrl = 'https://brapi.dev/api/quote';
 
-  final String _baseUrl = 'https://brapi.dev/api/quote';
+  final dio = Dio(BaseOptions(
+    baseUrl: _baseUrl,
+    connectTimeout: 50000,
+    receiveTimeout: 50000,
+    contentType: 'application/json', // Added contentType here
+  ));
 
   //'/api/quote/'
   //https://brapi.dev/api/quote/VSLH11?range=1d&interval=1mo&fundamental=false
@@ -16,12 +21,26 @@ class StocksRepository implements IStocks {
 
   @override
   Future<Stocks> getAllStocks() async {
-    final Response respnse = await dio.get(
-      '$_baseUrl/list',
-    );
+    try {
+      final Response respnse = await dio.get(
+        '$_baseUrl/list',
+      );
+      print(respnse.statusCode);
 
-    final Map<String, dynamic> stocks = respnse.data;
-    return Stocks.fromJson(stocks);
+      final Map<String, dynamic> stocks = respnse.data;
+      return Stocks.fromJson(stocks);
+    } on DioError catch (e) {
+      if (e.response != null) {
+        print(e.response?.data);
+        print(e.response?.headers);
+        print(e.response?.requestOptions);
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        print(e.requestOptions);
+        print(e.message);
+      }
+      return Stocks();
+    }
   }
 
   @override
@@ -45,7 +64,7 @@ class StocksRepository implements IStocks {
       final response = await dio.get(urlCompleta);
 
       print(response.statusCode);
-     // print(response.data);
+      // print(response.data);
 
       Map<String, dynamic> stocksInfo = response.data;
 

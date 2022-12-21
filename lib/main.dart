@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:b3_price_stocks/mockdata/mock_data.dart';
 import 'package:b3_price_stocks/pages/home_page.dart';
 import 'package:b3_price_stocks/pages/stocks_search_page.dart';
@@ -8,7 +10,18 @@ import 'package:provider/provider.dart';
 
 import 'components/item_list_stocks.dart';
 
+class PostHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
+
 void main() {
+  HttpOverrides.global = new PostHttpOverrides();
+
   runApp(const MyApp());
 }
 

@@ -3,165 +3,246 @@ import 'package:b3_price_stocks/model/stock.dart';
 import 'package:chart_sparkline/chart_sparkline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 import 'package:jovial_svg/jovial_svg.dart';
 
-class ItemListStocks extends StatelessWidget {
+class ItemListStocks extends StatefulWidget {
   final Stock stock;
   const ItemListStocks({super.key, required this.stock});
 
   @override
+  State<ItemListStocks> createState() => _ItemListStocksState();
+}
+
+class _ItemListStocksState extends State<ItemListStocks> {
+  ValueNotifier<bool> isExpandedGhaphic = ValueNotifier<bool>(false);
+
+  ValueNotifier<double> heightGhaphi = ValueNotifier<double>(0);
+
+  void setHeightGhaphi({required double height, required String sinal}) {
+    switch (sinal) {
+      case '+=':
+        setState(() {
+          heightGhaphi.value += height;
+        });
+        break;
+
+      case '-=':
+        setState(() {
+          heightGhaphi.value -= height;
+        });
+        break;
+
+      case '=':
+        setState(() {
+          heightGhaphi.value = height;
+        });
+        break;
+    }
+  }
+
+  void expandedGraphic({required double direction}) {
+    if (direction < 0) {
+      if (heightGhaphi.value > 0) {
+        if (heightGhaphi.value == 50) {
+          setHeightGhaphi(height: 0, sinal: '=');
+        } else {
+          setHeightGhaphi(height: 1, sinal: '-=');
+        }
+      }
+    } else if (direction > 0) {
+      if (heightGhaphi.value <= 110) {
+        if (heightGhaphi.value == 50) {
+          setHeightGhaphi(height: 110, sinal: '=');
+        } else {
+          setHeightGhaphi(height: 1, sinal: '+=');
+        }
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var data = [0.0, 1.0, 1.5, 2.0, 0.0, 0.0, -0.5, -1.0, -0.5, 0.0, 0.0];
+    debugPrint('reatualizando itemList: ');
+
     final Widget netWorkSvg = ScalableImageWidget.fromSISource(
       fit: BoxFit.cover,
       onLoading: (_) =>
           const Center(child: CircularProgressIndicator(color: Colors.amber)),
-      si: ScalableImageSource.fromSvgHttpUrl(Uri.parse(stock.logo),
+      si: ScalableImageSource.fromSvgHttpUrl(Uri.parse(widget.stock.logo),
           currentColor: Colors.transparent),
     );
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 1),
-      margin: const EdgeInsets.only(bottom: 20),
-      child: SizedBox(
-        height: 100,
-        child: Card(
-          elevation: 5,
-          color: const Color(0xFFF4F4F4),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
+      margin: EdgeInsetsDirectional.only(bottom: 10),
+      height: 100 + heightGhaphi.value,
+      child: GestureDetector(
+        onDoubleTap: () {
+          setState(() {
+            if (isExpandedGhaphic.value) {
+              isExpandedGhaphic.value = !isExpandedGhaphic.value;
+              heightGhaphi.value = 0;
+            } else {
+              isExpandedGhaphic.value = !isExpandedGhaphic.value;
+              heightGhaphi.value = 110;
+            }
+          });
+        },
+        onVerticalDragStart: (details) {
+          isExpandedGhaphic.value = true;
+        },
+        onVerticalDragUpdate: (details) {
+          expandedGraphic(direction: details.delta.direction);
+        },
+        child: Column(
+          children: [
+            Card(
+              elevation: 5,
+              //color: const Color(0xFFF4F4F4),
+              child: Column(
                 children: [
-                  SizedBox(
-                    height: double.infinity,
-                    width: 80,
-                    child: netWorkSvg,
-                  ),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          SizedBox(
+                            height: 80,
+                            width: 70,
+                            child: netWorkSvg,
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      widget.stock.stock,
+                                      style:
+                                          Theme.of(context).textTheme.headline6,
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                      widget.stock.name,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelMedium,
+                                    ),
+                                  ],
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Sector',
+                                      style:
+                                          Theme.of(context).textTheme.bodyLarge,
+                                    ),
+                                    Text(
+                                      widget.stock.sector,
+                                      style:
+                                          Theme.of(context).textTheme.bodySmall,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      //fim
+
+                      Container(
+                        child: Row(
                           children: [
-                            Text(
-                              stock.stock,
-                              style: Theme.of(context).textTheme.headline6,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  'Close:',
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                                Text(
+                                  'Change:',
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                                Text(
+                                  'Vol:',
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                                Text(
+                                  'Cap:',
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                              ],
                             ),
                             const SizedBox(
-                              height: 5,
+                              width: 10,
                             ),
-                            Text(
-                              stock.name,
-                              style: Theme.of(context).textTheme.labelMedium,
-                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  widget.stock.close.toStringAsFixed(3),
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                                Text(
+                                  widget.stock.change.toStringAsFixed(3),
+                                  style: TextStyle(
+                                      color: (widget.stock.change < 0)
+                                          ? Colors.red[900]
+                                          : Colors.black,
+                                      fontStyle: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.fontStyle,
+                                      fontSize: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.fontSize),
+                                ),
+                                Text(
+                                  widget.stock.volume.toString(),
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                                Text(
+                                  NumberFormat.compactCurrency(
+                                    name: 'R\$ ',
+                                    decimalDigits: 3,
+                                  ).format(widget.stock.market_cap),
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ],
+                            )
                           ],
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Sector',
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            Text(
-                              stock.sector,
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-               Container(
-                alignment: Alignment.centerRight,
-                // color: Color(0x55000000),
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Close:',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        Text(
-                          stock.close.toStringAsFixed(3),
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Change:',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        Text(
-                          stock.change.toStringAsFixed(3),
-                          style: TextStyle(
-                              color: (stock.change < 0)
-                                  ? Colors.red[900]
-                                  : Colors.black,
-                              fontStyle: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.fontStyle,
-                              fontSize: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.fontSize),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Vol:',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        Text(
-                          stock.volume.toString(),
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Cap:',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        Text(
-                          stock.market_cap.toStringAsFixed(3),
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+            ),
+            Card(
+              elevation: 2,
+              child: Container(
+                height: heightGhaphi.value,
+                //width: double.infinity,
+                child: isExpandedGhaphic.value
+                    ? GraphicLineStock(
+                        stockName: widget.stock.stock,
+                      )
+                    : Container(),
               ),
-              Expanded(
-                child: GraphicLineStock(
-                  //key: ObjectKey(stock.stock),
-                  stockName: stock.stock,
-                ),
-              ),
-             
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

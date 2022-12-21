@@ -64,16 +64,14 @@ class StocksProvider with ChangeNotifier {
     listaFinal.clear();
     if (listaStockName.isNotEmpty) {
       var listaDividida = listaStockName.dividirListaString(20);
-      // print(listaDividida);
 
       for (List<String> stock in listaDividida) {
         var resp = await _repository.getAllStocksInfo(symbols: stock);
 
         listaFinal.addAll([...?resp.results]);
+        notifyListeners();
         await Future.delayed(Duration(seconds: 5));
       }
-
-      notifyListeners();
     }
   }
 }
