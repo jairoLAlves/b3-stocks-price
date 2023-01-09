@@ -1,3 +1,12 @@
+
+
+enum StatusGetStocks{
+start, loading, success, error
+}
+
+
+
+
 enum sectors {
   Communications, //Comunicações,
   Finance, //Finança,
@@ -68,7 +77,7 @@ String? getValidRangeString(ValidRangesEnum validRangesEnum) {
     "5y",
     "10y",
     "ytd",
-    "max",
+    "max"
   ];
 
   switch (validRangesEnum) {

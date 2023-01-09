@@ -21,26 +21,13 @@ class StocksRepository implements IStocks {
 
   @override
   Future<Stocks> getAllStocks() async {
-    try {
-      final Response respnse = await dio.get(
-        '$_baseUrl/list',
-      );
-      print(respnse.statusCode);
+    final Response respnse = await dio.get(
+      '$_baseUrl/list',
+    );
+    print(respnse.statusCode);
 
-      final Map<String, dynamic> stocks = respnse.data;
-      return Stocks.fromJson(stocks);
-    } on DioError catch (e) {
-      if (e.response != null) {
-        print(e.response?.data);
-        print(e.response?.headers);
-        print(e.response?.requestOptions);
-      } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        print(e.requestOptions);
-        print(e.message);
-      }
-      return Stocks();
-    }
+    final Map<String, dynamic> stocks = respnse.data;
+    return Stocks.fromJson(stocks);
   }
 
   @override
@@ -59,19 +46,15 @@ class StocksRepository implements IStocks {
 
     final String urlCompleta =
         '$_baseUrl/${symbolList}?range=${getValidRangeString(range)}&interval=${getValidRangeString(interval)}&fundamental=$fundamental';
+    print(urlCompleta);
 
-    try {
-      final response = await dio.get(urlCompleta);
+    final response = await dio.get(urlCompleta);
 
-      print(response.statusCode);
-      // print(response.data);
+    print(response.statusCode);
+    // print(response.data);
 
-      Map<String, dynamic> stocksInfo = response.data;
+    Map<String, dynamic> stocksInfo = response.data;
 
-      return StocksInfoModel.fromJson(stocksInfo);
-    } catch (e) {
-      print("Error response $e");
-      return StocksInfoModel();
-    }
+    return StocksInfoModel.fromJson(stocksInfo);
   }
 }

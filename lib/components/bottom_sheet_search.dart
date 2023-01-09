@@ -80,7 +80,7 @@ class BottomSheetSearch extends StatelessWidget {
                     focusColor: Colors.grey,
                     borderRadius: BorderRadius.circular(10),
                     alignment: Alignment.center,
-                    menuMaxHeight: MediaQuery.of(context).size.height * 0.6,
+                    menuMaxHeight: MediaQuery.of(context).size.height * 0.7,
                     //
                     selectedItemBuilder: (context) =>
                         _sectors.map((sector) => Text(sector.name)).toList(),
@@ -117,7 +117,7 @@ class BottomSheetSearch extends StatelessWidget {
                       focusColor: Colors.grey,
                       borderRadius: BorderRadius.circular(10),
                       alignment: Alignment.center,
-                      menuMaxHeight: MediaQuery.of(context).size.height * 0.6,
+                      menuMaxHeight: MediaQuery.of(context).size.height * 0.7,
                       //
                       selectedItemBuilder: (context) =>
                           _sorted.map((sortBy) => Text(sortBy.name)).toList(),

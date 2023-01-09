@@ -10,18 +10,32 @@ import '../util/enums.dart';
 class StocksProvider with ChangeNotifier {
   final IStocks _repository = StocksRepository();
   List<Stock> _stoks = <Stock>[];
-  var listaFinal = <StockInfoModel>[];
+  var listaFinal = <StockInfoModel>{};
   List<String> listaStockName = [];
+
+  ValueNotifier<StatusGetStocks> stateUpdateStocks =
+      ValueNotifier<StatusGetStocks>(StatusGetStocks.start);
+
+  ValueNotifier<StatusGetStocks> stateInfoAllRange =
+      ValueNotifier<StatusGetStocks>(StatusGetStocks.start);
 
   List<Stock> getAllStocks() {
     return [..._stoks];
   }
 
   Future<List<Stock>> updateStocks() async {
-    final listaStocks = await _repository.getAllStocks();
-    _stoks = listaStocks.stocks ?? _stoks;
-    listaStockName = _stoks.stockSymbolList();
-    getStockInfoAll();
+    stateUpdateStocks.value = StatusGetStocks.loading;
+
+    try {
+      final listaStocks = await _repository.getAllStocks();
+      _stoks = listaStocks.stocks ?? _stoks;
+      //listaStockName = _stoks.stockSymbolList();
+    } catch (e) {
+      stateUpdateStocks.value  = StatusGetStocks.error;
+    }
+
+    stateUpdateStocks.value  = StatusGetStocks.success;
+
     return _stoks;
   }
 
@@ -72,6 +86,31 @@ class StocksProvider with ChangeNotifier {
         notifyListeners();
         await Future.delayed(Duration(seconds: 5));
       }
+    }
+  }
+
+  Future<void> getStockInfoAllRange({
+    required String symbol,
+    ValidRangesEnum range = ValidRangesEnum.one_m,
+    ValidRangesEnum interval = ValidRangesEnum.one_d,
+  }) async {
+    try {
+      stateInfoAllRange.value = StatusGetStocks.loading;
+      var resp = await _repository.getAllStocksInfo(
+        symbols: <String>[symbol],
+        interval: interval,
+        range: range,
+      );
+
+      StockInfoModel velho = getStockInfo(symbol);
+
+      if (listaFinal.contains(velho)) listaFinal.remove(velho);
+
+      if (resp.results != null) listaFinal.addAll(resp.results!);
+      stateInfoAllRange.value = StatusGetStocks.success;
+     notifyListeners();
+    } catch (e) {
+      stateInfoAllRange.value = StatusGetStocks.error;
     }
   }
 }
