@@ -1,3 +1,5 @@
 {
-    "cmake.configureOnOpen": true
+    
+    "androidEmulatorLauncher.emulatorPath": "/home/th4mz0/Android/Sdk/emulator/",
+    "androidEmulatorLauncher.adbPath": "/home/th4mz0/Android/Sdk/platform-tools/",
 }
