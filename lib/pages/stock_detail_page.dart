@@ -14,15 +14,24 @@ class _StockDetailState extends State<StockDetail> {
   @override
   Widget build(BuildContext context) {
     final stock = ModalRoute.of(context)?.settings.arguments as Stock;
+    debugPrint('id: ${stock.id}');
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(stock.name),
-        actions: [
-          Hero(tag: '${stock.stock}', child: getNetWorkSvg(stock.logo))
-        ],
       ),
-      body: Column(children: [Container()]),
+      body: Column(children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(stock.stock),
+            Hero(
+                tag: '${stock.id}',
+                child: Container(child: getNetWorkSvg(stock.logo))),
+          ],
+        )
+      ]),
     );
   }
 }

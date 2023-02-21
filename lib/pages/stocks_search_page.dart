@@ -1,3 +1,4 @@
+import 'package:b3_price_stocks/components/navigation_drawer_principal.dart';
 import 'package:b3_price_stocks/extensions/stocks_extensions.dart';
 import 'package:b3_price_stocks/model/stock.dart';
 import 'package:b3_price_stocks/providers/stocks_provider.dart';
@@ -134,73 +135,57 @@ class _StocksSearchPageState extends State<StocksSearchPage> {
   Widget build(BuildContext context) {
     var controller = context.watch<StocksProvider>();
 
+    final isExpanded = MediaQuery.of(context).size.width > 640;
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+
     return SafeArea(
       child: Scaffold(
-        body: Column(
-          children: [
-            Hero(
-              tag: 'searchButton',
-              child: Container(
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
-                  child: Card(
-                    elevation: 1,
-                    child: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Column(
-                        children: [
-                          Container(
-                            //padding: const EdgeInsets.only(bottom: 18),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: TextFormField(
-                                    decoration: const InputDecoration(
-                                      labelText: 'Symbol',
-                                      floatingLabelBehavior:
-                                          FloatingLabelBehavior.never,
-                                      filled: true,
-                                      fillColor: Colors.white,
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(25)),
-                                      ),
-                                      suffixIcon: Icon(Icons.search),
-                                    ),
-                                    onChanged: (value) {
-                                      if (value.isNotEmpty) {
-                                        searchStockFilter(value);
-                                      } else {
-                                        filterlist();
-                                      }
-                                    },
-                                  ),
-                                ),
-                                Container(
-                                    child: IconButton(
-                                        onPressed: () => showModalBottomSheet(
-                                              context: context,
-                                              builder: (ctx) =>
-                                                  BottomSheetSearch(
-                                                context: ctx,
-                                                onActionSector:
-                                                    onActionDropdownMenuItemSectors,
-                                                onActionSorted:
-                                                    onActionDropdownMenuItemSorted,
-                                                sector: _stocksSectors.value,
-                                                stocksSortBy:
-                                                    _stocksSortBy.value,
-                                              ),
-                                            ),
-                                        icon: Icon(Icons.settings)))
-                              ],
+        drawer: isExpanded ? null : const NavigationDrawerPrincipal(),
+        appBar: AppBar(
+          title: Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    labelText: 'Symbol',
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                    filled: true,
+                    border: null,
+                    suffixIcon: Icon(Icons.search),
+                  ),
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      searchStockFilter(value);
+                    } else {
+                      filterlist();
+                    }
+                  },
+                ),
+              ),
+              Container(
+                  child: IconButton(
+                      onPressed: () => showModalBottomSheet(
+                            context: context,
+                            builder: (ctx) => BottomSheetSearch(
+                              context: ctx,
+                              onActionSector: onActionDropdownMenuItemSectors,
+                              onActionSorted: onActionDropdownMenuItemSorted,
+                              sector: _stocksSectors.value,
+                              stocksSortBy: _stocksSortBy.value,
+                            ),
+                            constraints: BoxConstraints(
+                              minHeight: isExpanded ? height * 0.7 : height,
+                              minWidth: isExpanded ? width * 0.5 : width,
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  )),
-            ),
+                      icon: Icon(Icons.settings)))
+            ],
+          ),
+        ),
+        body: Row(
+          children: [
+            if (isExpanded) const NavigationDrawerPrincipal(),
             Expanded(
               child: RefreshIndicator(
                 key: _refreshIndicatorKey,
@@ -213,7 +198,6 @@ class _StocksSearchPageState extends State<StocksSearchPage> {
                 ),
               ),
             ),
-            ////
           ],
         ),
       ),

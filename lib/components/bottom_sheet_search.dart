@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 
 import '../util/enums.dart';
+import 'dropdown_menu_item_sectors.dart';
+import 'dropdown_menu_item_sorted.dart';
 
 class BottomSheetSearch extends StatelessWidget {
-  void Function(sectors sector) onActionSector;
-  void Function(StocksSortBy value) onActionSorted;
-  BuildContext context;
+  final void Function(sectors sector) onActionSector;
+  final void Function(StocksSortBy value) onActionSorted;
+  final BuildContext context;
   sectors sector;
   StocksSortBy stocksSortBy;
 
-  List<sectors> _sectors = [
+  final List<sectors> _sectors = [
     sectors.All,
     sectors.Communications,
     sectors.Finance,
@@ -34,7 +36,7 @@ class BottomSheetSearch extends StatelessWidget {
     sectors.Others,
   ];
 
-  List<StocksSortBy> _sorted = [
+  final List<StocksSortBy> _sorted = [
     StocksSortBy.volume,
     StocksSortBy.change,
     StocksSortBy.close,
@@ -44,7 +46,7 @@ class BottomSheetSearch extends StatelessWidget {
     StocksSortBy.stock,
   ];
 
-  BottomSheetSearch({
+   BottomSheetSearch({
     required this.onActionSector,
     required this.onActionSorted,
     required this.sector,
@@ -55,6 +57,10 @@ class BottomSheetSearch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isExpanded = MediaQuery.of(context).size.width > 600;
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+
     return StatefulBuilder(
       builder: (context, setState) {
         return Container(
@@ -73,14 +79,16 @@ class BottomSheetSearch extends StatelessWidget {
                   //dropdownSectors
                   DropdownButton(
                     value: sector,
-                    isExpanded: true,
+                    menuMaxHeight: height * 0.5,
+
+                    isExpanded: !isExpanded,
                     isDense: true,
                     autofocus: true,
-                    dropdownColor: Colors.black26,
-                    focusColor: Colors.grey,
+                    // dropdownColor: Colors.black26,
+                    //focusColor: Colors.grey,
                     borderRadius: BorderRadius.circular(10),
                     alignment: Alignment.center,
-                    menuMaxHeight: MediaQuery.of(context).size.height * 0.7,
+                    //menuMaxHeight: MediaQuery.of(context).size.height * 0.7,
                     //
                     selectedItemBuilder: (context) =>
                         _sectors.map((sector) => Text(sector.name)).toList(),
@@ -110,14 +118,15 @@ class BottomSheetSearch extends StatelessWidget {
                   //dropdownorted
                   DropdownButton(
                       value: stocksSortBy,
-                      isExpanded: true,
+                      menuMaxHeight: height * 0.5,
+                      isExpanded: !isExpanded,
                       isDense: true,
                       autofocus: true,
-                      dropdownColor: Colors.black26,
-                      focusColor: Colors.grey,
+                      // dropdownColor: Colors.black26,
+                      //  focusColor: Colors.grey,
                       borderRadius: BorderRadius.circular(10),
                       alignment: Alignment.center,
-                      menuMaxHeight: MediaQuery.of(context).size.height * 0.7,
+                      // menuMaxHeight: MediaQuery.of(context).size.height * 0.7,
                       //
                       selectedItemBuilder: (context) =>
                           _sorted.map((sortBy) => Text(sortBy.name)).toList(),
@@ -143,38 +152,5 @@ class BottomSheetSearch extends StatelessWidget {
   }
 }
 
-DropdownMenuItem<StocksSortBy> dropdownMenuItemSorted({
-  required StocksSortBy value,
-  bool enabled = true,
-}) {
-  return DropdownMenuItem(
-    value: value,
-    enabled: enabled,
-    child: Card(
-      color: Colors.white,
-      elevation: 2,
-      child: Container(
-        alignment: Alignment.center,
-        child: ListTile(title: Text(value.name)),
-      ),
-    ),
-  );
-}
 
-DropdownMenuItem<sectors> dropdownMenuItemSectors({
-  required sectors value,
-  bool enabled = true,
-}) {
-  return DropdownMenuItem(
-    value: value,
-    enabled: enabled,
-    child: Card(
-      color: Colors.white,
-      elevation: 2,
-      child: Container(
-        alignment: Alignment.center,
-        child: ListTile(title: Text(value.name.replaceAll('_', ' '))),
-      ),
-    ),
-  );
-}
+

@@ -6,9 +6,9 @@ import 'package:b3_price_stocks/pages/stocks_search_page.dart';
 import 'package:b3_price_stocks/pages/home_page.dart';
 import 'package:b3_price_stocks/providers/stocks_provider.dart';
 import 'package:b3_price_stocks/routes/routes_pages.dart';
+import 'package:b3_price_stocks/src/shared/themes/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'components/item_list_stocks.dart';
 
 class PostHttpOverrides extends HttpOverrides {
@@ -39,12 +39,10 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Stocks Prices',
-          theme: ThemeData(
-            colorScheme:
-                ColorScheme.fromSwatch(primarySwatch: Colors.deepPurple)
-                    .copyWith(secondary: Colors.amber),
-          ),
-          initialRoute: '/',
+          themeMode: ThemeMode.light,
+          theme: lightTheme,
+          darkTheme: dartTheme,
+          initialRoute: RoutesPages.HOME,
           routes: {
             RoutesPages.HOME: (ctx) => const HomePage(),
             RoutesPages.STOCKSSEARCH: (ctx) => const StocksSearchPage(),

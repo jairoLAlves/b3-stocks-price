@@ -67,7 +67,7 @@ class _ItemListStocksState extends State<ItemListStocks> {
                               height: 80,
                               width: 70,
                               child: Hero(
-                                  tag: '{${widget.stock.stock}}',
+                                  tag: '{${widget.stock.id}}',
                                   child: getNetWorkSvg(widget.stock.logo)),
                             ),
                             Container(
@@ -171,7 +171,9 @@ class _ItemListStocksState extends State<ItemListStocks> {
                                       style: TextStyle(
                                           color: (widget.stock.change < 0)
                                               ? Colors.red[900]
-                                              : Colors.black,
+                                              : Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface,
                                           fontStyle: Theme.of(context)
                                               .textTheme
                                               .bodySmall

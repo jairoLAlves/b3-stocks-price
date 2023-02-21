@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:b3_price_stocks/util/enums.dart';
 
 class Stock {
+  double id = Random().nextDouble();
   String? _stock;
   String? _name;
   num? _close;
