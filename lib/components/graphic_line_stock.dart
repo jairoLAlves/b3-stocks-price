@@ -44,20 +44,20 @@ class _GraphicLineStockState extends State<GraphicLineStock> {
 
   final double height = 108;
 
-  _start() {
+  Widget _start() {
     return Container(
       height: height,
     );
   }
 
-  _loading() {
+  Widget _loading() {
     return Container(
       height: height,
       child: Center(child: CircularProgressIndicator()),
     );
   }
 
-  _error(Function() onPressedBtnError) {
+  Widget _error(Function() onPressedBtnError) {
     return Container(
       height: height,
       child: Center(
@@ -68,7 +68,7 @@ class _GraphicLineStockState extends State<GraphicLineStock> {
     );
   }
 
-  stateManagement(
+  Widget stateManagement(
     StatusGetStocks state,
     List<double> historicalDataPrice,
     Function() onPressedBtnError,
@@ -152,13 +152,17 @@ class _GraphicLineStockState extends State<GraphicLineStock> {
     //print('$historicalDataPrice' + '\n');
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Consumer<StocksProvider>(
           builder: (context, controller, child) {
-            return stateManagement(
-              controller.stateInfoAllRange.value,
-              historicalDataPrice,
-              _getStockInfoAllRange,
+            return AnimatedSwitcher(
+              duration: Duration(seconds: 1),
+              child: stateManagement(
+                controller.stateInfoAllRange.value,
+                historicalDataPrice,
+                _getStockInfoAllRange,
+              ),
             );
           },
         ),
@@ -174,4 +178,3 @@ class _GraphicLineStockState extends State<GraphicLineStock> {
     );
   }
 }
-

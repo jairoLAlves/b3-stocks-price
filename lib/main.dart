@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:b3_price_stocks/mockdata/mock_data.dart';
+import 'package:b3_price_stocks/pages/settings_page.dart';
 import 'package:b3_price_stocks/pages/stock_detail_page.dart';
 import 'package:b3_price_stocks/pages/stocks_search_page.dart';
 import 'package:b3_price_stocks/pages/home_page.dart';
+import 'package:b3_price_stocks/providers/menu_principal_provider.dart';
 import 'package:b3_price_stocks/providers/stocks_provider.dart';
 import 'package:b3_price_stocks/routes/routes_pages.dart';
 import 'package:b3_price_stocks/src/shared/themes/themes.dart';
@@ -35,6 +37,8 @@ class MyApp extends StatelessWidget {
         providers: [
           ChangeNotifierProvider<StocksProvider>(
               create: (ctx) => StocksProvider()),
+          ChangeNotifierProvider<MenuPrincipalProvider>(
+              create: (ctx) => MenuPrincipalProvider()),
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
@@ -47,6 +51,7 @@ class MyApp extends StatelessWidget {
             RoutesPages.HOME: (ctx) => const HomePage(),
             RoutesPages.STOCKSSEARCH: (ctx) => const StocksSearchPage(),
             RoutesPages.STOCKDETAIL: (ctx) => const StockDetail(),
+            RoutesPages.SETTINGS: (ctx) => const SettingsPage(),
           },
         ));
   }

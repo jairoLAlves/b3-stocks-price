@@ -43,8 +43,9 @@ class _ItemListStocksState extends State<ItemListStocks> {
     debugPrint('reatualizando itemList:');
 
     return Container(
-      margin: EdgeInsetsDirectional.only(bottom: 10),
+      margin: EdgeInsetsDirectional.only(bottom: 40),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Card(
               elevation: 5,
@@ -56,178 +57,183 @@ class _ItemListStocksState extends State<ItemListStocks> {
                     arguments: widget.stock,
                   );
                 },
-                child: Column(
+                child: Wrap(
+                  alignment: WrapAlignment.spaceAround,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            SizedBox(
-                              height: 80,
-                              width: 70,
-                              child: Hero(
-                                  tag: '{${widget.stock.id}}',
-                                  child: getNetWorkSvg(widget.stock.logo)),
+                    Container(
+                      constraints: const BoxConstraints(
+                        maxWidth: 240,
+                      ),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            height: 80,
+                            width: 70,
+                            child: Hero(
+                                tag: '{${widget.stock.id}}',
+                                child: getNetWorkSvg(widget.stock.logo)),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      widget.stock.stock,
+                                      style:
+                                          Theme.of(context).textTheme.headline6,
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                      widget.stock.name,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelMedium,
+                                    ),
+                                  ],
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Sector',
+                                      style:
+                                          Theme.of(context).textTheme.bodyLarge,
+                                    ),
+                                    Text(
+                                      widget.stock.sector,
+                                      style:
+                                          Theme.of(context).textTheme.bodySmall,
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 2),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    //prices and graphicButtom
+
+                    Container(
+                      constraints: const BoxConstraints(
+                        maxWidth: 240,
+                      ),
+                      child: Row(
+                        children: [
+                          Row(
+                            children: [
+                              Column(
+                                // crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        widget.stock.stock,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline6,
-                                      ),
-                                      const SizedBox(
-                                        height: 5,
-                                      ),
-                                      Text(
-                                        widget.stock.name,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .labelMedium,
-                                      ),
-                                    ],
+                                  Text(
+                                    'Close:',
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge,
                                   ),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Sector',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge,
-                                      ),
-                                      Text(
-                                        widget.stock.sector,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall,
-                                      ),
-                                    ],
+                                  Text(
+                                    'Change:',
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                  Text(
+                                    'Vol:',
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                  Text(
+                                    'Cap:',
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge,
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
-                        ),
-
-                        //prices and graphicButtom
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      'Close:',
-                                      style:
-                                          Theme.of(context).textTheme.bodyLarge,
-                                    ),
-                                    Text(
-                                      'Change:',
-                                      style:
-                                          Theme.of(context).textTheme.bodyLarge,
-                                    ),
-                                    Text(
-                                      'Vol:',
-                                      style:
-                                          Theme.of(context).textTheme.bodyLarge,
-                                    ),
-                                    Text(
-                                      'Cap:',
-                                      style:
-                                          Theme.of(context).textTheme.bodyLarge,
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      widget.stock.close.toStringAsFixed(3),
-                                      style:
-                                          Theme.of(context).textTheme.bodySmall,
-                                    ),
-                                    Text(
-                                      widget.stock.change.toStringAsFixed(3),
-                                      style: TextStyle(
-                                          color: (widget.stock.change < 0)
-                                              ? Colors.red[900]
-                                              : Theme.of(context)
-                                                  .colorScheme
-                                                  .onSurface,
-                                          fontStyle: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall
-                                              ?.fontStyle,
-                                          fontSize: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall
-                                              ?.fontSize),
-                                    ),
-                                    Text(
-                                      widget.stock.volume.toString(),
-                                      style:
-                                          Theme.of(context).textTheme.bodySmall,
-                                    ),
-                                    Text(
-                                      NumberFormat.compactCurrency(
-                                        name: 'R\$ ',
-                                        decimalDigits: 3,
-                                      ).format(widget.stock.market_cap),
-                                      style:
-                                          Theme.of(context).textTheme.bodySmall,
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
-                            Container(
-                                height: 80,
-                                alignment: Alignment.center,
-                                child: IconButton(
-                                  icon: Icon(Icons.show_chart),
-                                  onPressed: showGraphic,
-                                ))
-                          ],
-                        ),
-                      ],
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              Column(
+                                // crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    widget.stock.close.toStringAsFixed(3),
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
+                                  ),
+                                  Text(
+                                    widget.stock.change.toStringAsFixed(3),
+                                    style: TextStyle(
+                                        color: (widget.stock.change < 0)
+                                            ? Colors.red[900]
+                                            : Theme.of(context)
+                                                .colorScheme
+                                                .onSurface,
+                                        fontStyle: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall
+                                            ?.fontStyle,
+                                        fontSize: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall
+                                            ?.fontSize),
+                                  ),
+                                  Text(
+                                    widget.stock.volume.toString(),
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
+                                  ),
+                                  Text(
+                                    NumberFormat.compactCurrency(
+                                      name: 'R\$ ',
+                                      decimalDigits: 3,
+                                    ).format(widget.stock.market_cap),
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                          Container(
+                              //height: 80,
+                              alignment: Alignment.center,
+                              child: IconButton(
+                                icon: Icon(Icons.show_chart),
+                                onPressed: showGraphic,
+                              ))
+                        ],
+                      ),
                     ),
                   ],
                 ),
               )),
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 600),
-            height: heightGhaphi.value,
-            child: Card(
-              elevation: 2,
-              child: isExpandedGhaphic.value
-                  ? Column(
-                      children: [
-                        GraphicLineStock(
-                          stockName: widget.stock.stock,
-                        ),
-                      ],
-                    )
-                  : Container(),
+          Container(
+            constraints: const BoxConstraints(
+              maxWidth: 600,
+            ),
+            child: AnimatedContainer(
+              curve: Curves.bounceOut,
+              duration: const Duration(milliseconds: 1000),
+              height: heightGhaphi.value,
+              child: Card(
+                elevation: 2,
+                child: isExpandedGhaphic.value
+                    ? Column(
+                        children: [
+                          GraphicLineStock(
+                            stockName: widget.stock.stock,
+                          ),
+                        ],
+                      )
+                    : Container(),
+              ),
             ),
           ),
         ],

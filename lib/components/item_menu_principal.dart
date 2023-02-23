@@ -1,58 +1,76 @@
 import 'package:flutter/material.dart';
 
 import '../model/Item_menu_principal_model.dart';
+import 'package:provider/provider.dart';
 
-class ItemMenuPrincipal extends StatefulWidget {
+import '../providers/menu_principal_provider.dart';
+
+class ItemMenuPrincipal extends StatelessWidget {
   final ItemMenuPrincipalModel item;
-  final AnimationController animationController;
+  final bool isSelected;
+  final void Function() onTap;
+  final AnimationController animatedController;
 
   const ItemMenuPrincipal({
     super.key,
     required this.item,
-    required this.animationController,
+    required this.isSelected,
+    required this.onTap,
+    required this.animatedController,
   });
-
-  @override
-  State<ItemMenuPrincipal> createState() => _ItemMenuPrincipalState();
-}
-
-class _ItemMenuPrincipalState extends State<ItemMenuPrincipal> {
-  late Animation<double> widthAnimation;
-  @override
-  void initState() {
-    super.initState();
-    widthAnimation =
-        Tween<double>(begin: 150, end: 50).animate(widget.animationController);
-  }
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: widget.item.onTap,
-      child: Container(
-        width: widthAnimation.value,
-        child: Card(
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-          color: Theme.of(context).colorScheme.background,
-          elevation: widget.item.isSelected ? 5 : 0,
-          child: Row(
-            children: [
-              Icon(
-                widget.item.icon,
-                size: 38,
-                color: widget.item.isSelected
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.onSurface,
-              ),
-              if (widthAnimation.value > 110) ...[
-                const SizedBox(
-                  width: 20,
+      onTap: () {
+        if (!isSelected) item.onTap();
+        onTap();
+      },
+      child: Consumer<MenuPrincipalProvider>(
+        builder: (context, controllerMenu, child) {
+          return ValueListenableBuilder(
+            valueListenable: controllerMenu.progressAnimated,
+            builder: (context, value, child) {
+              return Container(
+                // width: animationWidth.controllerMenu,
+                child: Card(
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.zero),
+                  //color: Theme.of(context).colorScheme.background,
+                  elevation: isSelected ? 5 : 0,
+                  child: Row(
+                    children: [
+                      Icon(
+                        item.icon,
+                        size: 38,
+                        color: isSelected
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                      if (value >= 0.6 && animatedController.isAnimating ||
+                          controllerMenu.isCollapsedMenu.value &&
+                              !animatedController.isAnimating)
+                        AnimatedContainer(
+                          curve: Curves.linearToEaseOut,
+                          duration: const Duration(milliseconds: 1000),
+                          child: Text(
+                            item.title,
+                            style: isSelected
+                                ? TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  )
+                                : const TextStyle(),
+                          ),
+                        )
+                    ],
+                  ),
                 ),
-                Text(widget.item.title),
-              ]
-            ],
-          ),
-        ),
+              );
+            },
+          );
+        },
       ),
     );
   }

@@ -70,29 +70,51 @@ class HistoricalPriceChoicechipRangeDate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      children: ChoicechipRangeDateList.map((chip) {
-        return ChoiceChip(
-          shape: RoundedRectangleBorder(),
-          selected: chip.index == indexChipSelect,
-          label: Text(chip.label),
-          onSelected: (value) {
-            onSelected(
-              chip.index,
-              chip.validRange,
+      child: Row(
+        children: [
+          ...ChoicechipRangeDateList.map((chip) {
+            var isSelectedItem = chip.index == indexChipSelect;
+
+            return Container(
+              margin: EdgeInsets.all(2),
+              child: ChoiceChip(
+                elevation: 5,
+                shape: BeveledRectangleBorder(),
+
+                disabledColor: Theme.of(context).colorScheme.background,
+                selectedColor: Theme.of(context).colorScheme.primary,
+                side: BorderSide.none,
+                selected: isSelectedItem,
+
+                label: Text(
+                  chip.label,
+                  style: TextStyle(
+                    color: isSelectedItem
+                        ? Theme.of(context).colorScheme.onPrimary
+                        : Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                onSelected: (value) {
+                  onSelected(
+                    chip.index,
+                    chip.validRange,
+                  );
+                },
+                // onSelected: (value) {
+                //   setState(() {
+                //     indexChipSelect = chip.index;
+                //     validRange = chip.validRange;
+                //   });
+                //   controller.getStockInfoAllRange(
+                //       symbol: widget.stockName, range: validRange);
+                // },
+              ),
             );
-          },
-          // onSelected: (value) {
-          //   setState(() {
-          //     indexChipSelect = chip.index;
-          //     validRange = chip.validRange;
-          //   });
-          //   controller.getStockInfoAllRange(
-          //       symbol: widget.stockName, range: validRange);
-          // },
-        );
-      }).toList(),
+          }).toList()
+        ],
+      ),
     );
   }
 }
