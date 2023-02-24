@@ -88,8 +88,8 @@ class _GraphicLineStockState extends State<GraphicLineStock> {
       case StatusGetStocks.start:
         return _start();
       case StatusGetStocks.success:
-        return Padding(
-          padding: const EdgeInsets.all(4.0),
+        return Container(
+          //padding: const EdgeInsets.all(4.0),
           child: Sparkline(
             data: historicalDataPrice,
             lineWidth: 1,
@@ -97,14 +97,14 @@ class _GraphicLineStockState extends State<GraphicLineStock> {
             averageLine: true,
             averageLabel: true,
             lineColor: cor,
-            gridLineLabelColor: Colors.black,
-            gridLineColor: Colors.black,
+            gridLineLabelColor: Theme.of(context).colorScheme.onBackground,
+            gridLineColor: Theme.of(context).colorScheme.onBackground,
             //enableThreshold: true,
 
-            useCubicSmoothing: true,
+            //useCubicSmoothing: true,
             pointsMode: PointsMode.atIndex,
-            //backgroundColor: Colors.grey.shade300,
-            cubicSmoothingFactor: 0.2,
+            //backgroundColor: Theme.of(context).colorScheme.surfaceTint,
+            //cubicSmoothingFactor: 0.2,
             kLine: const [
               'max',
               'min',
@@ -168,7 +168,7 @@ class _GraphicLineStockState extends State<GraphicLineStock> {
         ),
         Container(
           height: 30,
-          color: Colors.black.withAlpha(40),
+          //color: Colors.black.withAlpha(40),
           child: HistoricalPriceChoicechipRangeDate(
             indexChipSelect: indexChipSelect,
             onSelected: onSelected,

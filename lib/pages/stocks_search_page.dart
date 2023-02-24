@@ -92,15 +92,15 @@ class _StocksSearchPageState extends State<StocksSearchPage> {
     filterlist();
   }
 
-  _start() {
+  Widget _start() {
     return Container();
   }
 
-  _loading() {
+  Widget _loading() {
     return Center(child: CircularProgressIndicator());
   }
 
-  _error(Function() onPressedBtnError) {
+  Widget _error(Function() onPressedBtnError) {
     return Center(
         child: ElevatedButton(
       onPressed: onPressedBtnError,
@@ -108,7 +108,7 @@ class _StocksSearchPageState extends State<StocksSearchPage> {
     ));
   }
 
-  stateManagement(StatusGetStocks state) {
+  Widget stateManagement(StatusGetStocks state) {
     switch (state) {
       case StatusGetStocks.start:
         return _start();
