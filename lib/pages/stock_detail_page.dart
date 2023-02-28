@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../components/logo_stock_svg.dart';
 import '../model/stock.dart';
-import '../util/utils.dart';
 
 class StockDetail extends StatefulWidget {
   const StockDetail({super.key});
@@ -28,7 +28,7 @@ class _StockDetailState extends State<StockDetail> {
             Text(stock.stock),
             Hero(
                 tag: '${stock.id}',
-                child: Container(child: getNetWorkSvg(stock.logo))),
+                child: Container(child: LogoStockSvg(stock.logo))),
           ],
         )
       ]),

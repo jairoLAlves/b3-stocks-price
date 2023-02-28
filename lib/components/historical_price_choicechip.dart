@@ -80,7 +80,9 @@ class HistoricalPriceChoicechipRangeDate extends StatelessWidget {
             return Container(
               margin: EdgeInsets.all(2),
               child: ChoiceChip(
-                elevation: 5,
+                elevation: 2,
+
+                pressElevation: 3,
                 shape: BeveledRectangleBorder(),
 
                 disabledColor: Theme.of(context).colorScheme.background,
@@ -97,10 +99,12 @@ class HistoricalPriceChoicechipRangeDate extends StatelessWidget {
                   ),
                 ),
                 onSelected: (value) {
-                  onSelected(
-                    chip.index,
-                    chip.validRange,
-                  );
+                  if (!isSelectedItem) {
+                    onSelected(
+                      chip.index,
+                      chip.validRange,
+                    );
+                  }
                 },
                 // onSelected: (value) {
                 //   setState(() {

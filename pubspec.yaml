@@ -2,10 +2,9 @@ name: b3_price_stocks
 description: listing and analyzing the shares of the Brazilian stock exchange.
 homepage: https://github.com/jairoLAlves/b3-stocks-price
 
-
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -22,8 +21,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.18.2 <3.0.0'
-  
+  sdk: ">=2.18.2 <3.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -34,25 +32,23 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  #http: ^0.13.5
+  http: ^0.13.5
   dio: ^4.0.6
   candlesticks_plus: ^1.0.9
   provider: ^6.0.4
-  flutter_svg: ^1.1.6
-  jovial_svg: ^1.1.6
-  chart_sparkline: ^1.0.12
+  flutter_svg: ^2.0.2
+  chart_sparkline: ^1.0.13
   intl: ^0.17.0
   syncfusion_flutter_charts: ^20.3.61
-
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  flutter_animate: ^4.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
- 
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -66,7 +62,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

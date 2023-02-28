@@ -80,7 +80,7 @@ class _NavigationDrawerPrincipalState extends State<NavigationDrawerPrincipal>
       return AnimatedContainer(
         curve: Curves.easeInBack,
         duration: Duration(seconds: 1),
-        color: Theme.of(context).colorScheme.surfaceVariant,
+        color: Colors.transparent,
         height: MediaQuery.of(context).size.height,
         width: value.isCollapsedMenu.value ? value.maxWidth : value.minWidth,
         child: Column(
