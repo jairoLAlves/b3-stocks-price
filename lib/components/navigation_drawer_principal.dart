@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../model/Item_menu_principal_model.dart';
 import '../providers/menu_principal_provider.dart';
 import '../routes/routes_pages.dart';
@@ -13,26 +14,18 @@ class NavigationDrawerPrincipal extends StatefulWidget {
       _NavigationDrawerPrincipalState();
 }
 
-class _NavigationDrawerPrincipalState extends State<NavigationDrawerPrincipal>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _animatedController;
+class _NavigationDrawerPrincipalState extends State<NavigationDrawerPrincipal> {
   late final MenuPrincipalProvider controller;
 
   @override
   void initState() {
     super.initState();
     controller = context.read<MenuPrincipalProvider>();
-    _animatedController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 2000));
-    _animatedController.addListener(() {
-      controller.progressAnimated.value = _animatedController.value;
-    });
   }
 
   @override
   void dispose() {
     super.dispose();
-    _animatedController.dispose();
   }
 
   Widget buildHeader(BuildContext context) => Container(
@@ -76,13 +69,15 @@ class _NavigationDrawerPrincipalState extends State<NavigationDrawerPrincipal>
       ),
     ];
 
-    return Consumer<MenuPrincipalProvider>(builder: (context, value, _) {
+    return Consumer<MenuPrincipalProvider>(
+        builder: (context, controllerMenu, _) {
       return AnimatedContainer(
-        curve: Curves.easeInBack,
-        duration: Duration(seconds: 1),
-        color: Colors.transparent,
+        duration: 1000.ms,
+        color: Theme.of(context).colorScheme.surface,
         height: MediaQuery.of(context).size.height,
-        width: value.isCollapsedMenu.value ? value.maxWidth : value.minWidth,
+        width: controllerMenu.isCollapsedMenu.value
+            ? controllerMenu.maxWidth
+            : controllerMenu.minWidth,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -96,12 +91,12 @@ class _NavigationDrawerPrincipalState extends State<NavigationDrawerPrincipal>
                 itemBuilder: (context, index) => ItemMenuPrincipal(
                   //key: ObjectKey(index),
                   item: intensMenuPrincipal[index],
-                  isSelected: index == value.currentSelectedIndex.value,
-                  animatedController: _animatedController,
+                  isSelected:
+                      index == controllerMenu.currentSelectedIndex.value,
 
                   onTap: () {
                     setState(() {
-                      value.currentSelectedIndex.value = index;
+                      controllerMenu.currentSelectedIndex.value = index;
                     });
                   },
                 ),
@@ -109,17 +104,27 @@ class _NavigationDrawerPrincipalState extends State<NavigationDrawerPrincipal>
             ),
             InkWell(
               onTap: () => setState(() {
-                value.isCollapsedMenu.value = !value.isCollapsedMenu.value;
-                value.isCollapsedMenu.value
-                    ? _animatedController.forward()
-                    : _animatedController.reverse();
+                controllerMenu.isCollapsedMenu.value =
+                    !controllerMenu.isCollapsedMenu.value;
               }),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  AnimatedIcon(
-                    icon: AnimatedIcons.menu_close,
-                    progress: _animatedController,
+                  Icon(
+                    Icons.menu,
+                    color: Theme.of(context).colorScheme.surfaceTint,
+                  )
+                      .animate(
+                        target: controllerMenu.isCollapsedMenu.value ? 1 : 0,
+                      )
+                      .rotate(duration: 1000.ms)
+                      .swap(
+                    builder: (context, child) {
+                      return Icon(
+                        Icons.close,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ).animate();
+                    },
                   ),
                 ],
               ),

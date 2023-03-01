@@ -24,7 +24,6 @@ class StocksRepository implements IStocks {
     final Response respnse = await dio.get(
       '$_baseUrl/list',
     );
-    print(respnse.statusCode);
 
     final Map<String, dynamic> stocks = respnse.data;
     return Stocks.fromJson(stocks);
@@ -46,12 +45,8 @@ class StocksRepository implements IStocks {
 
     final String urlCompleta =
         '$_baseUrl/${symbolList}?range=${getValidRangeString(range)}&interval=${getValidRangeString(interval)}&fundamental=$fundamental';
-    print(urlCompleta);
 
     final response = await dio.get(urlCompleta);
-
-    print(response.statusCode);
-    // print(response.data);
 
     Map<String, dynamic> stocksInfo = response.data;
 

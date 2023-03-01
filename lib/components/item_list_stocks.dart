@@ -1,19 +1,9 @@
 import 'package:b3_price_stocks/components/graphic_line_stock.dart';
 import 'package:b3_price_stocks/model/stock.dart';
 import 'package:b3_price_stocks/routes/routes_pages.dart';
-import 'package:chart_sparkline/chart_sparkline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
-
-import '../model/choice_chip_range_date_model.dart';
-import '../providers/media_query_provider.dart';
-import '../providers/stocks_provider.dart';
-import '../util/enums.dart';
-import '../util/utils.dart';
-import 'package:provider/provider.dart';
-
 import 'logo_stock_svg.dart';
 
 class ItemListStocks extends StatefulWidget {
@@ -25,17 +15,17 @@ class ItemListStocks extends StatefulWidget {
 }
 
 class _ItemListStocksState extends State<ItemListStocks> {
-  ValueNotifier<bool> isExpandedGhaphic = ValueNotifier<bool>(false);
-  ValueNotifier<double> heightGhaphi = ValueNotifier<double>(0);
+  ValueNotifier<bool> isExpandedGraphic = ValueNotifier<bool>(false);
+  ValueNotifier<double> heightGraphic = ValueNotifier<double>(0);
 
   showGraphic() {
     setState(() {
-      isExpandedGhaphic.value = !isExpandedGhaphic.value;
+      isExpandedGraphic.value = !isExpandedGraphic.value;
 
-      if (isExpandedGhaphic.value) {
-        heightGhaphi.value = 146;
+      if (isExpandedGraphic.value) {
+        heightGraphic.value = 146;
       } else {
-        heightGhaphi.value = 0;
+        heightGraphic.value = 0;
       }
     });
   }
@@ -51,12 +41,17 @@ class _ItemListStocksState extends State<ItemListStocks> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Card(
-              elevation: 2,
+              shape: RoundedRectangleBorder(
+                side: BorderSide(
+                    color: Theme.of(context).colorScheme.onBackground),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              elevation: 5,
               child: Container(
                 height: 80,
                 width: 80,
                 child: ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(5)),
+                  borderRadius: const BorderRadius.all(Radius.circular(15)),
                   child: LogoStockSvg(stock.logo),
                 ),
               ),
@@ -79,8 +74,41 @@ class _ItemListStocksState extends State<ItemListStocks> {
             ),
           ],
         ),
-        Text('Sector'),
-        Text(stock.sector),
+        Container(
+          padding: const EdgeInsets.only(left: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Sector',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              Text(stock.sector, style: Theme.of(context).textTheme.bodyLarge),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget textItemListStocks(
+      {required BuildContext context,
+      required String txt1,
+      required String txt2,
+      TextStyle? style}) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          txt1,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        Text(
+          txt2,
+          style: style ?? Theme.of(context).textTheme.bodyLarge,
+        ),
       ],
     );
   }
@@ -94,12 +122,12 @@ class _ItemListStocksState extends State<ItemListStocks> {
           constraints: const BoxConstraints(
             maxWidth: 800,
           ),
-          padding: EdgeInsets.all(4),
+          padding: const EdgeInsets.all(4),
           child: Card(
               elevation: 2,
               //color: const Color(0x01000000),
               child: Container(
-                margin: EdgeInsets.all(8),
+                margin: const EdgeInsets.all(8),
                 child: Stack(
                   children: [
                     Column(
@@ -113,119 +141,79 @@ class _ItemListStocksState extends State<ItemListStocks> {
                             );
                           },
                           child: Wrap(
-                            direction: Axis.horizontal,
-                            alignment: WrapAlignment.spaceBetween,
-
-                            //spacing: 8,
+                            crossAxisAlignment: WrapCrossAlignment.end,
                             children: [
                               Container(
                                 child:
                                     headerItemListStocks(stock: widget.stock),
                               ),
-
-                              //prices and graphicButtom
-
-                              Container(
-                                margin: EdgeInsets.only(right: 20),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Column(
-                                          children: [
-                                            Text(
-                                              'Close:',
-                                              style: Theme.of(context)
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Card(
+                                elevation: 5,
+                                child: Container(
+                                  constraints: const BoxConstraints(
+                                    maxHeight: 100,
+                                    // minWidth: 200,
+                                  ),
+                                  child: Wrap(
+                                    direction: Axis.horizontal,
+                                    spacing: 20,
+                                    runSpacing: 10,
+                                    children: [
+                                      textItemListStocks(
+                                        context: context,
+                                        txt1: 'Close:',
+                                        txt2: widget.stock.close
+                                            .toStringAsFixed(3),
+                                      ),
+                                      textItemListStocks(
+                                          context: context,
+                                          txt1: 'Change:',
+                                          txt2: widget.stock.change
+                                              .toStringAsFixed(3),
+                                          style: TextStyle(
+                                              color: (widget.stock.change < 0)
+                                                  ? Colors.red[900]
+                                                  : Theme.of(context)
+                                                      .colorScheme
+                                                      .onSurface,
+                                              fontStyle: Theme.of(context)
                                                   .textTheme
-                                                  .bodyLarge,
-                                            ),
-                                            Text(
-                                              'Change:',
-                                              style: Theme.of(context)
+                                                  .titleMedium
+                                                  ?.fontStyle,
+                                              fontSize: Theme.of(context)
                                                   .textTheme
-                                                  .bodyLarge,
-                                            ),
-                                            Text(
-                                              'Vol:',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyLarge,
-                                            ),
-                                            Text(
-                                              'Cap:',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyLarge,
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        Column(
-                                          // crossAxisAlignment: CrossAxisAlignment.end,
-                                          children: [
-                                            Text(
-                                              widget.stock.close
-                                                  .toStringAsFixed(3),
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall,
-                                            ),
-                                            Text(
-                                              widget.stock.change
-                                                  .toStringAsFixed(3),
-                                              style: TextStyle(
-                                                  color:
-                                                      (widget.stock.change < 0)
-                                                          ? Colors.red[900]
-                                                          : Theme.of(context)
-                                                              .colorScheme
-                                                              .onSurface,
-                                                  fontStyle: Theme.of(context)
-                                                      .textTheme
-                                                      .bodySmall
-                                                      ?.fontStyle,
-                                                  fontSize: Theme.of(context)
-                                                      .textTheme
-                                                      .bodySmall
-                                                      ?.fontSize),
-                                            ),
-                                            Text(
-                                              widget.stock.volume.toString(),
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall,
-                                            ),
-                                            Text(
-                                              NumberFormat.compactCurrency(
-                                                name: 'R\$ ',
-                                                decimalDigits: 3,
-                                              ).format(widget.stock.market_cap),
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall,
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  ],
+                                                  .titleMedium
+                                                  ?.fontSize)),
+                                      textItemListStocks(
+                                        context: context,
+                                        txt1: 'Vol:',
+                                        txt2: widget.stock.volume.toString(),
+                                      ),
+                                      textItemListStocks(
+                                        context: context,
+                                        txt1: 'Cap:',
+                                        txt2: NumberFormat.compactCurrency(
+                                          name: 'R\$ ',
+                                          decimalDigits: 3,
+                                        ).format(widget.stock.market_cap),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],
                           ),
                         ),
                         ValueListenableBuilder(
-                            valueListenable: isExpandedGhaphic,
+                            valueListenable: isExpandedGraphic,
                             builder: (context, value, child) {
                               return Container()
                                   .animate(
                                 target: !value ? 0 : 1,
                               )
-
-                                  //
                                   .swap(builder: (_, __) {
                                 return Card(
                                         elevation: 1,
@@ -248,19 +236,6 @@ class _ItemListStocksState extends State<ItemListStocks> {
                                     );
                               });
                             }),
-
-                        // AnimatedContainer(
-                        //   duration: const Duration(milliseconds: 500),
-                        //   curve: Curves.bounceInOut,
-                        //   height: heightGhaphi.value,
-                        //   child: isExpandedGhaphic.value
-                        //       ? Card(
-                        //           elevation: 1,
-                        //           child: GraphicLineStock(
-                        //             stockName: widget.stock.stock,
-                        //           ))
-                        //       : Container(),
-                        // ),
                       ],
                     ),
                     Container(
@@ -268,11 +243,10 @@ class _ItemListStocksState extends State<ItemListStocks> {
                       child: AnimatedSwitcher(
                           switchInCurve: Curves.linear,
                           switchOutCurve: Curves.bounceIn,
-
                           duration: 1000.ms,
                           child: InkWell(
                             onTap: showGraphic,
-                            child: isExpandedGhaphic.value
+                            child: isExpandedGraphic.value
                                 ? const Icon(Icons.insert_chart)
                                 : const Icon(Icons.show_chart),
                           )),

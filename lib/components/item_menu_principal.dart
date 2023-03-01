@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import '../model/Item_menu_principal_model.dart';
 import 'package:provider/provider.dart';
@@ -9,15 +10,45 @@ class ItemMenuPrincipal extends StatelessWidget {
   final ItemMenuPrincipalModel item;
   final bool isSelected;
   final void Function() onTap;
-  final AnimationController animatedController;
 
   const ItemMenuPrincipal({
     super.key,
     required this.item,
     required this.isSelected,
     required this.onTap,
-    required this.animatedController,
   });
+
+  Widget titleIntemMenu(BuildContext context, String title, bool selected) {
+    return AnimatedDefaultTextStyle(
+      style: selected
+          ? TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
+            )
+          : TextStyle(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+      duration: 1000.ms,
+      child: Text(title),
+    );
+  }
+
+  Widget iconTitleMenu(BuildContext context, IconData icon, bool selected) {
+    return Animate(
+      target: selected ? 1 : 0,
+      delay: 100.ms,
+    ).custom(
+      begin: 30,
+      end: 25,
+      builder: (context, value, child) => Icon(
+        icon,
+        size: value,
+        color: selected
+            ? Theme.of(context).colorScheme.secondary
+            : Theme.of(context).colorScheme.surfaceTint,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +60,7 @@ class ItemMenuPrincipal extends StatelessWidget {
       child: Consumer<MenuPrincipalProvider>(
         builder: (context, controllerMenu, child) {
           return ValueListenableBuilder(
-            valueListenable: controllerMenu.progressAnimated,
+            valueListenable: controllerMenu.isCollapsedMenu,
             builder: (context, value, child) {
               return Container(
                 // width: animationWidth.controllerMenu,
@@ -38,33 +69,23 @@ class ItemMenuPrincipal extends StatelessWidget {
                       borderRadius: BorderRadius.zero),
                   //color: Theme.of(context).colorScheme.background,
                   elevation: isSelected ? 5 : 0,
-                  child: Row(
-                    children: [
-                      Icon(
-                        item.icon,
-                        size: 38,
-                        color: isSelected
-                            ? Theme.of(context).colorScheme.primary
-                            : Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                      if (value >= 0.6 && animatedController.isAnimating ||
-                          controllerMenu.isCollapsedMenu.value &&
-                              !animatedController.isAnimating)
-                        AnimatedContainer(
-                          curve: Curves.linearToEaseOut,
-                          duration: const Duration(milliseconds: 1000),
-                          child: Text(
-                            item.title,
-                            style: isSelected
-                                ? TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  )
-                                : const TextStyle(),
-                          ),
-                        )
-                    ],
+                  child: Container(
+                    child: controllerMenu.isCollapsedMenu.value
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              //icone
+                              iconTitleMenu(context, item.icon, isSelected),
+                              titleIntemMenu(context, item.title, isSelected),
+                            ],
+                          ).animate()
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              iconTitleMenu(context, item.icon, isSelected),
+                              titleIntemMenu(context, item.title, isSelected),
+                            ],
+                          ).animate(),
                   ),
                 ),
               );

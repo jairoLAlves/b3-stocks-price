@@ -26,7 +26,7 @@ import 'components/item_list_stocks.dart';
 
 void main() {
 //  HttpOverrides.global = new PostHttpOverrides();
-  Animate.restartOnHotReload = true;
+  // Animate.restartOnHotReload = true;
 
   runApp(const MyApp());
 }
