@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../util/enums.dart';
 
 DropdownMenuItem<sectors> dropdownMenuItemSectors({
+  required BuildContext context,
   required sectors value,
   bool enabled = true,
 }) {
@@ -14,7 +15,10 @@ DropdownMenuItem<sectors> dropdownMenuItemSectors({
       elevation: 2,
       child: Container(
         alignment: Alignment.center,
-        child: ListTile(title: Text(value.name.replaceAll('_', ' '))),
+        child: Text(
+          value.name.replaceAll('_', ' '),
+          style:  Theme.of(context).textTheme.titleMedium,
+        ),
       ),
     ),
   );

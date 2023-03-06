@@ -142,63 +142,103 @@ class _StocksSearchPageState extends State<StocksSearchPage> {
     return SafeArea(
       child: Scaffold(
         drawer: isExpanded ? null : const NavigationDrawerPrincipal(),
-        appBar: AppBar(
-          title: Row(
-            children: [
-              Expanded(
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Symbol',
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                    filled: true,
-                    border: null,
-                    suffixIcon: Icon(Icons.search),
+        appBar: isExpanded
+            ? null
+            : AppBar(
+                actions: [
+                  IconButton(
+                    onPressed: () => showModalBottomSheet(
+                      context: context,
+                      builder: (ctx) => BottomSheetSearch(
+                        context: ctx,
+                        onActionSector: onActionDropdownMenuItemSectors,
+                        onActionSorted: onActionDropdownMenuItemSorted,
+                        sector: _stocksSectors.value,
+                        stocksSortBy: _stocksSortBy.value,
+                      ),
+                      
+                    ),
+                    icon: const Icon(Icons.settings),
                   ),
-                  onChanged: (value) {
-                    if (value.isNotEmpty) {
-                      searchStockFilter(value);
-                    } else {
-                      filterlist();
-                    }
-                  },
+                ],
+              ),
+        body: SafeArea(
+          child: Row(
+            children: [
+              if (isExpanded) const NavigationDrawerPrincipal(),
+              Expanded(
+                child: RefreshIndicator(
+                  key: _refreshIndicatorKey,
+                  onRefresh: loadList,
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 40, horizontal: 4),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Flexible(
+                              child: Container(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 700,
+                                  minWidth: 100,
+                                ),
+                                child: TextFormField(
+                                  decoration: const InputDecoration(
+                                    labelText: 'Symbol',
+                                    floatingLabelBehavior:
+                                        FloatingLabelBehavior.never,
+                                    filled: true,
+                                    border: null,
+                                    suffixIcon: Icon(Icons.search),
+                                  ),
+                                  onChanged: (value) {
+                                    if (value.isNotEmpty) {
+                                      searchStockFilter(value);
+                                    } else {
+                                      filterlist();
+                                    }
+                                  },
+                                ),
+                              ),
+                            ),
+                            if(isExpanded)
+                            Container(
+                              child: IconButton(
+                                onPressed: () => showModalBottomSheet(
+                                  context: context,
+                                  builder: (ctx) => BottomSheetSearch(
+                                    context: ctx,
+                                    onActionSector:
+                                        onActionDropdownMenuItemSectors,
+                                    onActionSorted:
+                                        onActionDropdownMenuItemSorted,
+                                    sector: _stocksSectors.value,
+                                    stocksSortBy: _stocksSortBy.value,
+                                  ),
+                                 
+                                ),
+                                icon: const Icon(Icons.settings),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: AnimatedBuilder(
+                          animation: controller.stateUpdateStocks,
+                          builder: (context, child) {
+                            return stateManagement(
+                                controller.stateUpdateStocks.value);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              Container(
-                  child: IconButton(
-                      onPressed: () => showModalBottomSheet(
-                            context: context,
-                            builder: (ctx) => BottomSheetSearch(
-                              context: ctx,
-                              onActionSector: onActionDropdownMenuItemSectors,
-                              onActionSorted: onActionDropdownMenuItemSorted,
-                              sector: _stocksSectors.value,
-                              stocksSortBy: _stocksSortBy.value,
-                            ),
-                            constraints: BoxConstraints(
-                              minHeight: isExpanded ? height * 0.7 : height,
-                              minWidth: isExpanded ? width * 0.5 : width,
-                            ),
-                          ),
-                      icon: Icon(Icons.settings)))
             ],
           ),
-        ),
-        body: Row(
-          children: [
-            if (isExpanded) const NavigationDrawerPrincipal(),
-            Expanded(
-              child: RefreshIndicator(
-                key: _refreshIndicatorKey,
-                onRefresh: loadList,
-                child: AnimatedBuilder(
-                  animation: controller.stateUpdateStocks,
-                  builder: (context, child) {
-                    return stateManagement(controller.stateUpdateStocks.value);
-                  },
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );

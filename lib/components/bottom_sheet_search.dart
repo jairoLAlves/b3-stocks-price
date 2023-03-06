@@ -46,7 +46,7 @@ class BottomSheetSearch extends StatelessWidget {
     StocksSortBy.stock,
   ];
 
-   BottomSheetSearch({
+  BottomSheetSearch({
     required this.onActionSector,
     required this.onActionSorted,
     required this.sector,
@@ -79,9 +79,9 @@ class BottomSheetSearch extends StatelessWidget {
                   //dropdownSectors
                   DropdownButton(
                     value: sector,
-                    menuMaxHeight: height * 0.5,
+                    //menuMaxHeight: height * 0.5,
 
-                    isExpanded: !isExpanded,
+                     isExpanded: true,
                     isDense: true,
                     autofocus: true,
                     // dropdownColor: Colors.black26,
@@ -94,6 +94,7 @@ class BottomSheetSearch extends StatelessWidget {
                         _sectors.map((sector) => Text(sector.name)).toList(),
                     items: _sectors
                         .map((sector) => dropdownMenuItemSectors(
+                              context: context,
                               value: sector,
                             ))
                         .toList(),
@@ -118,8 +119,8 @@ class BottomSheetSearch extends StatelessWidget {
                   //dropdownorted
                   DropdownButton(
                       value: stocksSortBy,
-                      menuMaxHeight: height * 0.5,
-                      isExpanded: !isExpanded,
+                      //menuMaxHeight: height * 0.5,
+                      isExpanded: true,
                       isDense: true,
                       autofocus: true,
                       // dropdownColor: Colors.black26,
@@ -131,8 +132,8 @@ class BottomSheetSearch extends StatelessWidget {
                       selectedItemBuilder: (context) =>
                           _sorted.map((sortBy) => Text(sortBy.name)).toList(),
                       items: _sorted
-                          .map(
-                              (sortBy) => dropdownMenuItemSorted(value: sortBy))
+                          .map((sortBy) => dropdownMenuItemSorted(
+                              context: context, value: sortBy))
                           .toList(),
                       onChanged: (StocksSortBy? newValue) {
                         if (newValue != null) {
@@ -151,6 +152,3 @@ class BottomSheetSearch extends StatelessWidget {
     );
   }
 }
-
-
-

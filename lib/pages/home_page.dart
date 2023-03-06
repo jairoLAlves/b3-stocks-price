@@ -9,7 +9,7 @@ class HomePage extends StatelessWidget {
     bool bigSize = MediaQuery.of(context).size.width >= 640;
     return Scaffold(
       drawer: bigSize ? null : const NavigationDrawerPrincipal(),
-      appBar: AppBar(),
+      appBar: bigSize ? null : AppBar(),
       body: Row(
         children: [
           if (bigSize) const NavigationDrawerPrincipal(),

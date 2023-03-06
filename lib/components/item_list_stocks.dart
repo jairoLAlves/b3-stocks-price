@@ -33,58 +33,121 @@ class _ItemListStocksState extends State<ItemListStocks> {
   Widget headerItemListStocks({
     required Stock stock,
   }) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Card(
-              shape: RoundedRectangleBorder(
-                side: BorderSide(
-                    color: Theme.of(context).colorScheme.onBackground),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              elevation: 5,
-              child: Container(
-                height: 80,
-                width: 80,
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(15)),
-                  child: LogoStockSvg(stock.logo),
-                ),
-              ),
-            ),
-            const SizedBox(
-              width: 20,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  stock.stock,
-                  style: Theme.of(context).textTheme.titleLarge,
+                Card(
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(
+                        color: Theme.of(context).colorScheme.onBackground),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  elevation: 5,
+                  child: Container(
+                    height: 80,
+                    width: 80,
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.all(Radius.circular(15)),
+                      child: LogoStockSvg(stock.logo),
+                    ),
+                  ),
                 ),
-                Text(
-                  stock.name,
-                  style: Theme.of(context).textTheme.labelMedium,
+                const SizedBox(
+                  width: 20,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      stock.stock,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    Text(
+                      stock.name,
+                      style: Theme.of(context).textTheme.labelMedium,
+                    ),
+                  ],
                 ),
               ],
             ),
+            Container(
+              padding: const EdgeInsets.only(left: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Sector',
+                    style: Theme.of(context).textTheme.titleMedium,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    stock.sector,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
-        Container(
-          padding: const EdgeInsets.only(left: 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Sector',
-                style: Theme.of(context).textTheme.titleMedium,
+        const Flexible(
+          flex: 1,
+          child: SizedBox(),
+        ),
+        Flexible(
+          flex: 4,
+          child: Card(
+            elevation: 1,
+            child: Container(
+              margin: EdgeInsets.all(8),
+              child: Wrap(
+                alignment: WrapAlignment.start,
+                spacing: 8,
+                children: [
+                  textItemListStocks(
+                    context: context,
+                    txt1: 'Close:',
+                    txt2: widget.stock.close.toStringAsFixed(3),
+                  ),
+                  textItemListStocks(
+                      context: context,
+                      txt1: 'Change:',
+                      txt2: widget.stock.change.toStringAsFixed(3),
+                      style: TextStyle(
+                          color: (widget.stock.change < 0)
+                              ? Colors.red[900]
+                              : Theme.of(context).colorScheme.onSurface,
+                          fontStyle: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.fontStyle,
+                          fontSize: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.fontSize)),
+                  textItemListStocks(
+                    context: context,
+                    txt1: 'Vol:',
+                    txt2: widget.stock.volume.toString(),
+                  ),
+                  textItemListStocks(
+                    context: context,
+                    txt1: 'Cap:',
+                    txt2: NumberFormat.compactCurrency(
+                      name: 'R\$ ',
+                      decimalDigits: 3,
+                    ).format(widget.stock.market_cap),
+                  ),
+                ],
               ),
-              Text(stock.sector, style: Theme.of(context).textTheme.bodyLarge),
-            ],
+            ),
           ),
         ),
       ],
@@ -96,27 +159,32 @@ class _ItemListStocksState extends State<ItemListStocks> {
       required String txt1,
       required String txt2,
       TextStyle? style}) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          txt1,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        Text(
-          txt2,
-          style: style ?? Theme.of(context).textTheme.bodyLarge,
-        ),
-      ],
+    return Container(
+      padding: const EdgeInsets.all(2),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            txt1,
+            style: Theme.of(context).textTheme.titleMedium,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Text(
+            txt2,
+            style: style ?? Theme.of(context).textTheme.bodyLarge,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
           constraints: const BoxConstraints(
@@ -130,113 +198,53 @@ class _ItemListStocksState extends State<ItemListStocks> {
                 margin: const EdgeInsets.all(8),
                 child: Stack(
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            Navigator.of(context).pushNamed(
-                              RoutesPages.STOCKDETAIL,
-                              arguments: widget.stock,
-                            );
-                          },
-                          child: Wrap(
-                            crossAxisAlignment: WrapCrossAlignment.end,
-                            children: [
-                              Container(
-                                child:
-                                    headerItemListStocks(stock: widget.stock),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Card(
-                                elevation: 5,
-                                child: Container(
-                                  constraints: const BoxConstraints(
-                                    maxHeight: 100,
-                                    // minWidth: 200,
-                                  ),
-                                  child: Wrap(
-                                    direction: Axis.horizontal,
-                                    spacing: 20,
-                                    runSpacing: 10,
-                                    children: [
-                                      textItemListStocks(
-                                        context: context,
-                                        txt1: 'Close:',
-                                        txt2: widget.stock.close
-                                            .toStringAsFixed(3),
-                                      ),
-                                      textItemListStocks(
-                                          context: context,
-                                          txt1: 'Change:',
-                                          txt2: widget.stock.change
-                                              .toStringAsFixed(3),
-                                          style: TextStyle(
-                                              color: (widget.stock.change < 0)
-                                                  ? Colors.red[900]
-                                                  : Theme.of(context)
-                                                      .colorScheme
-                                                      .onSurface,
-                                              fontStyle: Theme.of(context)
-                                                  .textTheme
-                                                  .titleMedium
-                                                  ?.fontStyle,
-                                              fontSize: Theme.of(context)
-                                                  .textTheme
-                                                  .titleMedium
-                                                  ?.fontSize)),
-                                      textItemListStocks(
-                                        context: context,
-                                        txt1: 'Vol:',
-                                        txt2: widget.stock.volume.toString(),
-                                      ),
-                                      textItemListStocks(
-                                        context: context,
-                                        txt1: 'Cap:',
-                                        txt2: NumberFormat.compactCurrency(
-                                          name: 'R\$ ',
-                                          decimalDigits: 3,
-                                        ).format(widget.stock.market_cap),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
+                    Container(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.of(context).pushNamed(
+                                RoutesPages.STOCKDETAIL,
+                                arguments: widget.stock,
+                              );
+                            },
+                            child: headerItemListStocks(stock: widget.stock),
                           ),
-                        ),
-                        ValueListenableBuilder(
-                            valueListenable: isExpandedGraphic,
-                            builder: (context, value, child) {
-                              return Container()
-                                  .animate(
-                                target: !value ? 0 : 1,
-                              )
-                                  .swap(builder: (_, __) {
-                                return Card(
-                                        elevation: 1,
-                                        child: GraphicLineStock(
-                                          stockName: widget.stock.stock,
-                                        ))
-                                    //
 
-                                    .animate()
-                                    .scaleY(
-                                      duration: 800.ms,
-                                      curve: Curves.linear,
-                                      begin: 0,
-                                      end: 1,
-                                    )
-                                    .desaturate(
-                                      begin: 0.0,
-                                      end: 1.0,
-                                      duration: 800.ms,
-                                    );
-                              });
-                            }),
-                      ],
+                          // Gráfico card
+                          ValueListenableBuilder(
+                              valueListenable: isExpandedGraphic,
+                              builder: (context, value, child) {
+                                return Container()
+                                    .animate(
+                                  target: !value ? 0 : 1,
+                                )
+                                    .swap(builder: (_, __) {
+                                  return Card(
+                                          elevation: 1,
+                                          child: GraphicLineStock(
+                                            stockName: widget.stock.stock,
+                                          ))
+                                      //
+
+                                      .animate()
+                                      .scaleY(
+                                        duration: 800.ms,
+                                        curve: Curves.linear,
+                                        begin: 0,
+                                        end: 1,
+                                      )
+                                      .desaturate(
+                                        begin: 0.0,
+                                        end: 1.0,
+                                        duration: 800.ms,
+                                      );
+                                });
+                              }),
+                        ],
+                      ),
                     ),
                     Container(
                       alignment: Alignment.topRight,
