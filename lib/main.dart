@@ -22,7 +22,7 @@ class PostHttpOverrides extends HttpOverrides {
 }
 
 void main() {
-  HttpOverrides.global = new PostHttpOverrides();
+  HttpOverrides.global = PostHttpOverrides();
 
   runApp(const MyApp());
 }
