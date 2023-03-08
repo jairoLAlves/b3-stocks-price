@@ -1,12 +1,11 @@
-import 'dart:convert';
 import 'package:dio/dio.dart';
 import '../interfaces/stocks_interface.dart';
 import '../model/stocks.dart';
 import '../model/stocks_info_model.dart';
 import '../util/enums.dart';
 
-class StocksRepository implements IStocks {
-  static String _baseUrl = 'https://brapi.dev/api/quote';
+class StocksRepository with IStockInfo implements IStocks {
+  static const String _baseUrl = 'https://brapi.dev/api/quote';
 
   final dio = Dio(BaseOptions(
     baseUrl: _baseUrl,
@@ -38,17 +37,20 @@ class StocksRepository implements IStocks {
   }) async {
     String symbolList = '';
 
-    symbols.forEach((symbol) {
-      bool islast = symbols.last != symbol;
-      symbolList += islast ? symbol.toUpperCase() + ',' : symbol.toUpperCase();
-    });
+    for (var symbol in symbols) {
+      bool isLast = symbols.last != symbol;
+      symbolList += isLast ? '${symbol.toUpperCase()},' : symbol.toUpperCase();
+    }
 
     final String urlCompleta =
-        '$_baseUrl/${symbolList}?range=${getValidRangeString(range)}&interval=${getValidRangeString(interval)}&fundamental=$fundamental';
+        '$_baseUrl/$symbolList?range=${getValidRangeString(range)}&interval=${getValidRangeString(interval)}&fundamental=$fundamental';
 
-    final response = await dio.get(urlCompleta);
+    Response? response =
+        symbolList.isNotEmpty ? await dio.get(urlCompleta) : null;
 
-    Map<String, dynamic> stocksInfo = response.data;
+    Map<String, dynamic> stocksInfo = <String, dynamic>{};
+
+    if (response != null) stocksInfo = response.data;
 
     return StocksInfoModel.fromJson(stocksInfo);
   }

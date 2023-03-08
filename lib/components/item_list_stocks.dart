@@ -97,12 +97,12 @@ class _ItemListStocksState extends State<ItemListStocks> {
             ),
           ],
         ),
-        const Flexible(
-          flex: 1,
-          child: SizedBox(),
-        ),
+        // const Flexible(
+        //   flex: 1,
+        //   child: SizedBox(),
+        // ),
         Flexible(
-          flex: 4,
+          //flex: 4,
           child: Card(
             elevation: 1,
             child: Container(

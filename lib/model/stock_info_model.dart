@@ -56,6 +56,10 @@ class StockInfoModel {
     this.earningsPerShare,
     this.logourl,
   });
+  @override
+  String toString() {
+    return toJson().toString();
+  }
 
   StockInfoModel.fromJson(Map<String, dynamic> json) {
     symbol = json['symbol'];

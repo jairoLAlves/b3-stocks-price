@@ -1,13 +1,15 @@
-import 'package:b3_price_stocks/model/stock_info_model.dart';
+
 import 'package:b3_price_stocks/providers/stocks_provider.dart';
 import 'package:chart_sparkline/chart_sparkline.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+
 import 'package:provider/provider.dart';
 import 'package:b3_price_stocks/extensions/stocks_extensions.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 
-import '../model/choice_chip_range_date_model.dart';
+
+
+import '../model/stock_info_model.dart';
+import '../providers/stock_info_provaider.dart';
 import '../util/enums.dart';
 import 'historical_price_choicechip.dart';
 
@@ -24,14 +26,14 @@ class GraphicLineStock extends StatefulWidget {
 }
 
 class _GraphicLineStockState extends State<GraphicLineStock> {
-  late final controller;
+  late final StockInfoProvider controller;
 
   late ValidRangesEnum validRange = ValidRangesEnum.five_d;
 
   @override
   void initState() {
     super.initState();
-    controller = context.read<StocksProvider>();
+    controller = context.read<StockInfoProvider>();
     _getStockInfoAllRange();
   }
 
@@ -138,9 +140,8 @@ class _GraphicLineStockState extends State<GraphicLineStock> {
   Widget build(BuildContext context) {
     debugPrint('reatualizando grafico: ${widget.stockName}');
 
-    var controller = context.watch<StocksProvider>();
-
-    var stockInfo = controller.getStockInfo(widget.stockName);
+  var controller = context.watch<StockInfoProvider>();
+    StockInfoModel stockInfo = controller.getStockInfo(widget.stockName);
 
     List<double> historicalDataPrice =
         stockInfo.historicalDataPrice?.getListNumFilter().map((e) {
@@ -154,7 +155,7 @@ class _GraphicLineStockState extends State<GraphicLineStock> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Consumer<StocksProvider>(
+        Consumer<StockInfoProvider>(
           builder: (context, controller, child) {
             return AnimatedSwitcher(
               duration: Duration(seconds: 1),

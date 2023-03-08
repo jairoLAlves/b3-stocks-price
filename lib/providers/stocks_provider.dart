@@ -10,14 +10,14 @@ import '../util/enums.dart';
 class StocksProvider with ChangeNotifier {
   final IStocks _repository = StocksRepository();
   List<Stock> _stoks = <Stock>[];
-  var listaFinal = <StockInfoModel>{};
-  List<String> listaStockName = [];
+  //var listaFinal = <StockInfoModel>{};
+  //List<String> listaStockName = [];
 
   ValueNotifier<StatusGetStocks> stateUpdateStocks =
       ValueNotifier<StatusGetStocks>(StatusGetStocks.start);
 
-  ValueNotifier<StatusGetStocks> stateInfoAllRange =
-      ValueNotifier<StatusGetStocks>(StatusGetStocks.start);
+  // ValueNotifier<StatusGetStocks> stateInfoAllRange =
+  //     ValueNotifier<StatusGetStocks>(StatusGetStocks.start);
 
   List<Stock> getAllStocks() {
     return [..._stoks];
@@ -39,14 +39,14 @@ class StocksProvider with ChangeNotifier {
     return _stoks;
   }
 
-  StockInfoModel getStockInfo(String StockSymbol) {
-    var listRetorno = listaFinal.firstWhere(
-      (stocoInfo) => stocoInfo.symbol == StockSymbol,
-      orElse: () => StockInfoModel(),
-    );
+  // StockInfoModel getStockInfo(String StockSymbol) {
+  //   var listRetorno = listaFinal.firstWhere(
+  //     (stocoInfo) => stocoInfo.symbol == StockSymbol,
+  //     orElse: () => StockInfoModel(),
+  //   );
 
-    return listRetorno;
-  }
+  //   return listRetorno;
+  // }
 
   // sortOrderStocks(StocksSortBy stocksSortBy, {bool sortOrder = true}) {
   //   _stoks.sortedBy(stocksSortBy);
@@ -74,43 +74,43 @@ class StocksProvider with ChangeNotifier {
     }).toList();
   }
 
-  Future<void> getStockInfoAll() async {
-    listaFinal.clear();
-    if (listaStockName.isNotEmpty) {
-      var listaDividida = listaStockName.dividirListaString(20);
+  // Future<void> getStockInfoAll() async {
+  //   listaFinal.clear();
+  //   if (listaStockName.isNotEmpty) {
+  //     var listaDividida = listaStockName.dividirListaString(20);
 
-      for (List<String> stock in listaDividida) {
-        var resp = await _repository.getAllStocksInfo(symbols: stock);
+  //     for (List<String> stock in listaDividida) {
+  //       var resp = await _repository.getAllStocksInfo(symbols: stock);
 
-        listaFinal.addAll([...?resp.results]);
-        notifyListeners();
-        await Future.delayed(Duration(seconds: 5));
-      }
-    }
-  }
+  //       listaFinal.addAll([...?resp.results]);
+  //       notifyListeners();
+  //       await Future.delayed(Duration(seconds: 5));
+  //     }
+  //   }
+  // }
 
-  Future<void> getStockInfoAllRange({
-    required String symbol,
-    ValidRangesEnum range = ValidRangesEnum.one_m,
-    ValidRangesEnum interval = ValidRangesEnum.one_d,
-  }) async {
-    try {
-      stateInfoAllRange.value = StatusGetStocks.loading;
-      var resp = await _repository.getAllStocksInfo(
-        symbols: <String>[symbol],
-        interval: interval,
-        range: range,
-      );
+  // Future<void> getStockInfoAllRange({
+  //   required String symbol,
+  //   ValidRangesEnum range = ValidRangesEnum.one_m,
+  //   ValidRangesEnum interval = ValidRangesEnum.one_d,
+  // }) async {
+  //   try {
+  //     stateInfoAllRange.value = StatusGetStocks.loading;
+  //     var resp = await _repository.getAllStocksInfo(
+  //       symbols: <String>[symbol],
+  //       interval: interval,
+  //       range: range,
+  //     );
 
-      StockInfoModel velho = getStockInfo(symbol);
+  //     StockInfoModel velho = getStockInfo(symbol);
 
-      if (listaFinal.contains(velho)) listaFinal.remove(velho);
+  //     if (listaFinal.contains(velho)) listaFinal.remove(velho);
 
-      if (resp.results != null) listaFinal.addAll(resp.results!);
-      stateInfoAllRange.value = StatusGetStocks.success;
-     notifyListeners();
-    } catch (e) {
-      stateInfoAllRange.value = StatusGetStocks.error;
-    }
-  }
+  //     if (resp.results != null) listaFinal.addAll(resp.results!);
+  //     stateInfoAllRange.value = StatusGetStocks.success;
+  //    notifyListeners();
+  //   } catch (e) {
+  //     stateInfoAllRange.value = StatusGetStocks.error;
+  //   }
+  // }
 }
