@@ -81,7 +81,7 @@ class BottomSheetSearch extends StatelessWidget {
                     value: sector,
                     //menuMaxHeight: height * 0.5,
 
-                     isExpanded: true,
+                    isExpanded: true,
                     isDense: true,
                     autofocus: true,
                     // dropdownColor: Colors.black26,
@@ -109,7 +109,7 @@ class BottomSheetSearch extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Column(

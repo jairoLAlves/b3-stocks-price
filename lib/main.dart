@@ -44,6 +44,7 @@ class MyApp extends StatelessWidget {
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
+          
           title: 'Stocks Prices',
           themeMode: ThemeMode.system,
           theme: lightTheme,

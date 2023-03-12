@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'stock_info_model.dart';
 
 class StocksInfoModel {
@@ -17,11 +18,14 @@ class StocksInfoModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.results != null) {
-      data['results'] = this.results!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (results != null) {
+      data['results'] = results!.map((v) => v.toJson()).toList();
     }
-    data['requestedAt'] = this.requestedAt;
+    data['requestedAt'] = requestedAt;
     return data;
   }
+
+  @override
+  String toString() => 'StocksInfoModel(results: $results, requestedAt: $requestedAt)';
 }

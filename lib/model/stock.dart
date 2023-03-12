@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:math';
 
 import 'package:b3_price_stocks/util/enums.dart';
@@ -88,5 +89,14 @@ class Stock {
     data['sector'] = _sector;
 
     return data;
+  }
+  
+
+
+
+
+  @override
+  String toString() {
+    return 'Stock(_stock: $_stock, _name: $_name, _close: $_close, _change: $_change, _volume: $_volume, _market_cap: $_market_cap, _logo: $_logo, _sector: $_sector)';
   }
 }

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../components/graphic_line_stock.dart';
+import '../components/pane_item_info.dart';
 import '../model/stock.dart';
 import '../model/stock_info_model.dart';
 import '../providers/stock_info_provaider.dart';
-import '../providers/stocks_provider.dart';
 import '../util/enums.dart';
 import 'package:provider/provider.dart';
+
+//how to get the stock data of Tesla in dadrt?
 
 class StockDetailPage extends StatefulWidget {
   const StockDetailPage({
@@ -16,21 +19,24 @@ class StockDetailPage extends StatefulWidget {
   State<StockDetailPage> createState() => _StockDetailState();
 }
 
-class _StockDetailState extends State<StockDetailPage> {
-  late final StockInfoProvider controller;
-  // late final ValueNotifier<String> stockName = ValueNotifier("");
+class _StockDetailState extends State<StockDetailPage>
+    with TickerProviderStateMixin {
+  late StockInfoProvider controller;
+  final ValueNotifier<StockInfoModel> stockInfo =
+      ValueNotifier(StockInfoModel());
   late ValidRangesEnum validRange = ValidRangesEnum.five_d;
   late final ValueNotifier<Stock> stock = ValueNotifier(Stock());
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     controller = context.read<StockInfoProvider>();
     stock.addListener(() {
-       _getStockInfoAllRange();
+      _getStockInfoAllRange();
     });
 
-   
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   void _getStockInfoAllRange() {
@@ -42,33 +48,67 @@ class _StockDetailState extends State<StockDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    var controller = context.watch<StockInfoProvider>();
+    controller = context.watch<StockInfoProvider>();
     stock.value = (ModalRoute.of(context)?.settings.arguments as Stock);
 
-    StockInfoModel stockInfo = controller.getStockInfo(stock.value.stock);
+    stockInfo.value = controller.getStockInfo(stock.value.stock);
+    String titleLong = (stockInfo.value.longName ?? stock.value.name) ?? "";
 
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(stock.value.name),
-        ),
-        body: ValueListenableBuilder(
-          valueListenable: stock,
-          builder: (context, value, child) {
-            return Container(
-              margin: const EdgeInsets.all(8),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Último Fechamento"),
-                      Text("${stockInfo.regularMarketPrice}"),
-                    ],
-                  ),
-                ],
+    return SafeArea(
+      child: Scaffold(
+          appBar: AppBar(
+            title: Text(titleLong),
+          ),
+          body: Column(
+            children: [
+              Container(
+                constraints: const BoxConstraints(
+                  maxWidth: 700,
+                ),
+                child: TabBar(
+                  controller: _tabController,
+                  tabs: const [
+                    Tab(child: Text("Resumo")),
+                    Tab(child: Text("Gráfico")),
+                    Tab(child: Text("Estatísticas")),
+                  ],
+                ),
               ),
-            );
-          },
-        ));
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    SingleChildScrollView(
+                      child: ValueListenableBuilder(
+                          valueListenable: stockInfo,
+                          builder: (context, value, child) {
+                            return Column(
+                              children: [
+                                Container(
+                                  constraints:
+                                      const BoxConstraints(maxHeight: 300, maxWidth: 700),
+                                  child: Card(
+                                      elevation: 1,
+                                      child: (value.symbol != null) ? GraphicLineStock(
+                                        stockName: value.symbol!,
+                                      ): null
+                                      
+                                      ),
+                                ),
+                                PanelItemInfo(stockInfoModel: value),
+                              ],
+                            );
+                          }),
+                    ),
+                    Stack(children: const [Text("Gráfico")]),
+                    const Center(
+                      child: Text("Estatísticas"),
+                    )
+                  ],
+                ),
+              )
+            ],
+          )),
+    );
   }
 }

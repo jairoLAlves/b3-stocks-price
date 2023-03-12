@@ -33,17 +33,17 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^0.13.5
-  dio: ^4.0.6
+  dio: ^5.0.1
   candlesticks_plus: ^1.0.9
-  provider: ^6.0.4
+  provider: ^6.0.5
   flutter_svg: ^2.0.2
   chart_sparkline: ^1.0.13
-  intl: ^0.17.0
-  syncfusion_flutter_charts: ^20.3.61
+  intl: ^0.18.0
+  syncfusion_flutter_charts: ^20.4.53
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.2
+  cupertino_icons: ^1.0.5
   flutter_animate: ^4.1.0
 
 dev_dependencies:
@@ -55,7 +55,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
+  flutter_lints: ^2.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -66,6 +66,8 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    - assets/images/barras.svg
 
   # To add assets to your application, add an assets section, like this:
   # assets:

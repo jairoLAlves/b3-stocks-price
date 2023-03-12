@@ -1,3 +1,5 @@
+// ignore_for_file: slash_for_doc_comments
+
 import 'package:dio/dio.dart';
 import '../interfaces/stocks_interface.dart';
 import '../model/stocks.dart';
@@ -9,8 +11,8 @@ class StocksRepository with IStockInfo implements IStocks {
 
   final dio = Dio(BaseOptions(
     baseUrl: _baseUrl,
-    connectTimeout: 50000,
-    receiveTimeout: 50000,
+    connectTimeout: const Duration(milliseconds: 50000),
+    receiveTimeout:  const Duration(milliseconds: 50000),
     contentType: 'application/json', // Added contentType here
   ));
 
@@ -28,12 +30,21 @@ class StocksRepository with IStockInfo implements IStocks {
     return Stocks.fromJson(stocks);
   }
 
+  /**
+   * symbols = Add one or more tickers separated by a comma.
+   * range = Range for historical prices.
+   * interval = Interval to get historial prices within the range.
+   * fundamental = Retrieve fundamental analysis data.
+   * dividends = Retrieve dividends data.
+   */
+
   @override
   Future<StocksInfoModel> getAllStocksInfo({
     required List<String> symbols,
     ValidRangesEnum range = ValidRangesEnum.one_m,
     ValidRangesEnum interval = ValidRangesEnum.one_d,
     bool fundamental = true,
+    bool dividends = true,
   }) async {
     String symbolList = '';
 
@@ -43,7 +54,7 @@ class StocksRepository with IStockInfo implements IStocks {
     }
 
     final String urlCompleta =
-        '$_baseUrl/$symbolList?range=${getValidRangeString(range)}&interval=${getValidRangeString(interval)}&fundamental=$fundamental';
+        '$_baseUrl/$symbolList?range=${getValidRangeString(range)}&interval=${getValidRangeString(interval)}&fundamental=$fundamental&dividends=$dividends';
 
     Response? response =
         symbolList.isNotEmpty ? await dio.get(urlCompleta) : null;

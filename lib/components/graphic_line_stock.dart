@@ -1,12 +1,8 @@
-
-import 'package:b3_price_stocks/providers/stocks_provider.dart';
 import 'package:chart_sparkline/chart_sparkline.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 import 'package:b3_price_stocks/extensions/stocks_extensions.dart';
-
-
 
 import '../model/stock_info_model.dart';
 import '../providers/stock_info_provaider.dart';
@@ -16,7 +12,7 @@ import 'historical_price_choicechip.dart';
 class GraphicLineStock extends StatefulWidget {
   final String stockName;
 
-  GraphicLineStock({
+  const GraphicLineStock({
     super.key,
     required this.stockName,
   });
@@ -53,19 +49,19 @@ class _GraphicLineStockState extends State<GraphicLineStock> {
   }
 
   Widget _loading() {
-    return Container(
+    return SizedBox(
       height: height,
-      child: Center(child: CircularProgressIndicator()),
+      child: const Center(child: CircularProgressIndicator()),
     );
   }
 
   Widget _error(Function() onPressedBtnError) {
-    return Container(
+    return SizedBox(
       height: height,
       child: Center(
           child: ElevatedButton(
         onPressed: onPressedBtnError,
-        child: Text('Tente Novamente'),
+        child: const Text('Tente Novamente'),
       )),
     );
   }
@@ -96,6 +92,7 @@ class _GraphicLineStockState extends State<GraphicLineStock> {
             data: historicalDataPrice,
             lineWidth: 1,
             //averageLine
+
             averageLine: true,
             averageLabel: true,
             lineColor: cor,
@@ -140,7 +137,7 @@ class _GraphicLineStockState extends State<GraphicLineStock> {
   Widget build(BuildContext context) {
     debugPrint('reatualizando grafico: ${widget.stockName}');
 
-  var controller = context.watch<StockInfoProvider>();
+    var controller = context.watch<StockInfoProvider>();
     StockInfoModel stockInfo = controller.getStockInfo(widget.stockName);
 
     List<double> historicalDataPrice =
@@ -154,25 +151,28 @@ class _GraphicLineStockState extends State<GraphicLineStock> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Consumer<StockInfoProvider>(
-          builder: (context, controller, child) {
-            return AnimatedSwitcher(
-              duration: Duration(seconds: 1),
-              child: stateManagement(
-                controller.stateInfoAllRange.value,
-                historicalDataPrice,
-                _getStockInfoAllRange,
-              ),
-            );
-          },
-        ),
-        Container(
+        SizedBox(
           height: 30,
           //color: Colors.black.withAlpha(40),
           child: HistoricalPriceChoicechipRangeDate(
             indexChipSelect: indexChipSelect,
             onSelected: onSelected,
+          ),
+        ),
+        Expanded(
+          child: Consumer<StockInfoProvider>(
+            builder: (context, controller, child) {
+              return AnimatedSwitcher(
+                duration: const Duration(seconds: 1),
+                child: stateManagement(
+                  controller.stateInfoAllRange.value,
+                  historicalDataPrice,
+                  _getStockInfoAllRange,
+                ),
+              );
+            },
           ),
         ),
       ],

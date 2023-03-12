@@ -7,6 +7,7 @@ import '../util/enums.dart';
 
 class StockInfoProvider with ChangeNotifier {
   final IStockInfo _repository = StocksRepository();
+  static bool isPrimary = true;
 
   ValueNotifier<StatusGetStocks> stateInfoAllRange =
       ValueNotifier<StatusGetStocks>(StatusGetStocks.start);
@@ -21,29 +22,34 @@ class StockInfoProvider with ChangeNotifier {
     return retorno;
   }
 
-  Future<void> getStockInfoAllRange({
+  void getStockInfoAllRange({
     required String symbol,
     ValidRangesEnum range = ValidRangesEnum.one_m,
     ValidRangesEnum interval = ValidRangesEnum.one_d,
+    bool dividends = true,
   }) async {
-    try {
-      stateInfoAllRange.value = StatusGetStocks.loading;
-      var resp = await _repository.getAllStocksInfo(
-        symbols: <String>[symbol],
-        interval: interval,
-        range: range,
-      );
+    if (StockInfoProvider.isPrimary) {
+      try {
+        stateInfoAllRange.value = StatusGetStocks.loading;
+        var resp = await _repository.getAllStocksInfo(
+          symbols: <String>[symbol],
+          interval: interval,
+          range: range,
+          dividends: dividends,
+        );
 
-      StockInfoModel velho = getStockInfo(symbol);
+        StockInfoModel velho = getStockInfo(symbol);
 
-      if (_listaFinal.contains(velho)) _listaFinal.remove(velho);
+        if (_listaFinal.contains(velho)) _listaFinal.remove(velho);
 
-      if (resp.results != null) _listaFinal.addAll(resp.results!);
-      stateInfoAllRange.value = StatusGetStocks.success;
-      notifyListeners();
-      print(_listaFinal);
-    } catch (e) {
-      stateInfoAllRange.value = StatusGetStocks.error;
+        if (resp.results != null) _listaFinal.addAll(resp.results!);
+        stateInfoAllRange.value = StatusGetStocks.success;
+        notifyListeners();
+      } catch (e) {
+        stateInfoAllRange.value = StatusGetStocks.error;
+      }
+    } else {
+      StockInfoProvider.isPrimary = false;
     }
   }
 }

@@ -66,7 +66,7 @@ class HistoricalPriceChoicechipRangeDate extends StatelessWidget {
   final void Function(int index, ValidRangesEnum validRangeFun) onSelected;
 
   HistoricalPriceChoicechipRangeDate(
-      {required this.indexChipSelect, required this.onSelected});
+      {super.key, required this.indexChipSelect, required this.onSelected});
 
   @override
   Widget build(BuildContext context) {
@@ -78,12 +78,12 @@ class HistoricalPriceChoicechipRangeDate extends StatelessWidget {
             var isSelectedItem = chip.index == indexChipSelect;
 
             return Container(
-              margin: EdgeInsets.all(2),
+              margin: const EdgeInsets.all(2),
               child: ChoiceChip(
                 elevation: 2,
 
                 pressElevation: 3,
-                shape: BeveledRectangleBorder(),
+                shape: const BeveledRectangleBorder(),
 
                 disabledColor: Theme.of(context).colorScheme.background,
                 selectedColor: Theme.of(context).colorScheme.primary,

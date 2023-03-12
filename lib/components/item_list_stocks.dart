@@ -1,4 +1,4 @@
-import 'package:b3_price_stocks/components/graphic_line_stock.dart';
+import 'package:b3_price_stocks/components/sf_chart_candle.dart';
 import 'package:b3_price_stocks/model/stock.dart';
 import 'package:b3_price_stocks/routes/routes_pages.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +16,28 @@ class ItemListStocks extends StatefulWidget {
 
 class _ItemListStocksState extends State<ItemListStocks> {
   ValueNotifier<bool> isExpandedGraphic = ValueNotifier<bool>(false);
+  ValueNotifier<bool> isFullScreenGraphic = ValueNotifier<bool>(false);
   ValueNotifier<double> heightGraphic = ValueNotifier<double>(0);
 
-  showGraphic() {
+  void setFullScreenGraphic() {
+    setState(() {
+      isFullScreenGraphic.value = !isFullScreenGraphic.value;
+    });
+  }
+
+  void showFullGraphic() {
+    setFullScreenGraphic();
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Material(
+          child: showGraphicWidget(),
+        );
+      },
+    );
+  }
+
+  void showGraphic() {
     setState(() {
       isExpandedGraphic.value = !isExpandedGraphic.value;
 
@@ -34,7 +53,7 @@ class _ItemListStocksState extends State<ItemListStocks> {
     required Stock stock,
   }) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Column(
@@ -42,6 +61,7 @@ class _ItemListStocksState extends State<ItemListStocks> {
           children: [
             Row(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Card(
                   shape: RoundedRectangleBorder(
@@ -50,7 +70,7 @@ class _ItemListStocksState extends State<ItemListStocks> {
                     borderRadius: BorderRadius.circular(15),
                   ),
                   elevation: 5,
-                  child: Container(
+                  child: SizedBox(
                     height: 80,
                     width: 80,
                     child: ClipRRect(
@@ -106,7 +126,7 @@ class _ItemListStocksState extends State<ItemListStocks> {
           child: Card(
             elevation: 1,
             child: Container(
-              margin: EdgeInsets.all(8),
+              margin: const EdgeInsets.all(8),
               child: Wrap(
                 alignment: WrapAlignment.start,
                 spacing: 8,
@@ -181,10 +201,27 @@ class _ItemListStocksState extends State<ItemListStocks> {
     );
   }
 
+  Widget showGraphicWidget() {
+    return isFullScreenGraphic.value
+        ? SFChartCandle(
+            stockName: widget.stock.stock,
+            isExpandedGraphic: isFullScreenGraphic.value,
+            fullScreenGraphic: () {
+              Navigator.of(context).pop();
+              setFullScreenGraphic();
+            })
+        : SFChartCandle(
+            stockName: widget.stock.stock,
+            isExpandedGraphic: isFullScreenGraphic.value,
+            fullScreenGraphic: () => showFullGraphic(),
+          );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           constraints: const BoxConstraints(
@@ -202,6 +239,7 @@ class _ItemListStocksState extends State<ItemListStocks> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           InkWell(
                             onTap: () {
@@ -214,35 +252,42 @@ class _ItemListStocksState extends State<ItemListStocks> {
                           ),
 
                           // Gráfico card
-                          ValueListenableBuilder(
-                              valueListenable: isExpandedGraphic,
-                              builder: (context, value, child) {
-                                return Container()
-                                    .animate(
-                                  target: !value ? 0 : 1,
-                                )
-                                    .swap(builder: (_, __) {
-                                  return Card(
-                                          elevation: 1,
-                                          child: GraphicLineStock(
-                                            stockName: widget.stock.stock,
-                                          ))
-                                      //
 
-                                      .animate()
-                                      .scaleY(
-                                        duration: 800.ms,
-                                        curve: Curves.linear,
-                                        begin: 0,
-                                        end: 1,
-                                      )
-                                      .desaturate(
-                                        begin: 0.0,
-                                        end: 1.0,
-                                        duration: 800.ms,
-                                      );
-                                });
-                              }),
+                          Container(
+                            constraints: const BoxConstraints(
+                              maxHeight: 300,
+                            ),
+                            child: ValueListenableBuilder(
+                                valueListenable: isExpandedGraphic,
+                                builder: (context, value, child) {
+                                  return Container(
+                                    height: 0,
+                                  )
+                                      .animate(
+                                    target: !value ? 0 : 1,
+                                  )
+                                      .swap(builder: (_, __) {
+                                    return Card(
+                                      elevation: 1,
+                                      child: showGraphicWidget(),
+                                    )
+                                        //
+
+                                        .animate()
+                                        .scaleY(
+                                          duration: 800.ms,
+                                          curve: Curves.linear,
+                                          begin: 0,
+                                          end: 1,
+                                        )
+                                        .desaturate(
+                                          begin: 0.0,
+                                          end: 1.0,
+                                          duration: 800.ms,
+                                        );
+                                  });
+                                }),
+                          )
                         ],
                       ),
                     ),

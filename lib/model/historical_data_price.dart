@@ -1,5 +1,7 @@
 import 'package:candlesticks_plus/candlesticks_plus.dart';
 
+import 'chart_sample_date.dart';
+
 class HistoricalDataPrice {
   num? date;
   num? open;
@@ -17,36 +19,33 @@ class HistoricalDataPrice {
     this.volume,
   });
 
-  
-
   HistoricalDataPrice.fromJson(Map<String, dynamic> json) {
-    this.date = json['date'];
-    this.open = json['open'];
-    this.high = json['high'];
-    this.low = json['low'];
-    this.close = json['close'];
-    this.volume = json['volume'];
+    date = json['date'];
+    open = json['open'];
+    high = json['high'];
+    low = json['low'];
+    close = json['close'];
+    volume = json['volume'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['date'] = this.date;
-    data['open'] = this.open;
-    data['high'] = this.high;
-    data['low'] = this.low;
-    data['close'] = this.close;
-    data['volume'] = this.volume;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['date'] = date;
+    data['open'] = open;
+    data['high'] = high;
+    data['low'] = low;
+    data['close'] = close;
+    data['volume'] = volume;
     return data;
   }
 
   Candle get toCandle {
-    DateTime _date =
-        DateTime.fromMillisecondsSinceEpoch(this.date!.toInt() * 1000);
-    double _high = this.high!.toDouble();
-    double _low = this.low!.toDouble();
-    double _open = this.open!.toDouble();
-    double _close = this.close!.toDouble();
-    double _volume = this.volume!.toDouble();
+    DateTime _date = DateTime.fromMillisecondsSinceEpoch(date!.toInt() * 1000);
+    double _high = high!.toDouble();
+    double _low = low!.toDouble();
+    double _open = open!.toDouble();
+    double _close = close!.toDouble();
+    double _volume = volume!.toDouble();
     return Candle(
       date: _date,
       high: _high,
@@ -57,15 +56,28 @@ class HistoricalDataPrice {
     );
   }
 
+  ChartSampleDate get toChartSampleDate {
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(date!.toInt() * 1000);
+
+    return ChartSampleDate(
+      dateTime: dateTime,
+      high: high,
+      low: low,
+      open: open,
+      close: close,
+      volume: volume,
+    );
+  }
+
   @override
   String toString() {
     return '''
-    ${this.date}
-    ${this.open}
-    ${this.high}
-    ${this.low}
-    ${this.close}
-    ${this.volume}
+    date: $date
+    open: $open
+    high: $high
+    low: $low
+    close: $close
+    volume: $volume
 ''';
   }
 }
