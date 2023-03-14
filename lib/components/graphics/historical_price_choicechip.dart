@@ -1,7 +1,8 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 
-import '../util/enums.dart';
-import '../model/choice_chip_range_date_model.dart';
+import '../../model/choice_chip_range_date_model.dart';
+import '../../util/enums.dart';
 
 class HistoricalPriceChoicechipRangeDate extends StatelessWidget {
   var ChoicechipRangeDateList = <ChoicechipRangeDate>[
@@ -65,8 +66,11 @@ class HistoricalPriceChoicechipRangeDate extends StatelessWidget {
   final int indexChipSelect;
   final void Function(int index, ValidRangesEnum validRangeFun) onSelected;
 
-  HistoricalPriceChoicechipRangeDate(
-      {super.key, required this.indexChipSelect, required this.onSelected});
+  HistoricalPriceChoicechipRangeDate({
+    Key? key,
+    required this.indexChipSelect,
+    required this.onSelected,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

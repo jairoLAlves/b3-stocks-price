@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 
-import '../model/item_info_expansion_panel_model.dart';
-import '../model/stock_info_model.dart';
+import '../models/item_info_expansion_panel_model.dart';
+import '../../../model/stock_info_model.dart';
 import 'info_stock_panel_widget.dart';
 
 class PanelItemInfo extends StatefulWidget {

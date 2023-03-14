@@ -7,10 +7,10 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'package:b3_price_stocks/extensions/stocks_extensions.dart';
 
-import '../model/chart_sample_date.dart';
-import '../model/stock_info_model.dart';
-import '../providers/stock_info_provaider.dart';
-import '../util/enums.dart';
+import '../../model/chart_sample_date.dart';
+import '../../model/stock_info_model.dart';
+import '../../providers/stock_info_provaider.dart';
+import '../../util/enums.dart';
 import 'historical_price_choicechip.dart';
 
 class SFChartCandle extends StatefulWidget {

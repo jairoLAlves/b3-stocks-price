@@ -8,10 +8,10 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
-import '../components/bottom_sheet_search.dart';
-import '../components/item_list_stocks.dart';
-import '../components/search_input_widget.dart';
-import '../util/enums.dart';
+import 'components/bottom_sheet_search.dart';
+import 'components/item_list_stocks.dart';
+import 'components/search_input_widget.dart';
+import '../../util/enums.dart';
 
 class StocksSearchPage extends StatefulWidget {
   const StocksSearchPage({super.key});

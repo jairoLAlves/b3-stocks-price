@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:b3_price_stocks/mockdata/mock_data.dart';
-import 'package:b3_price_stocks/pages/settings_page.dart';
-import 'package:b3_price_stocks/pages/stock_detail_page.dart';
-import 'package:b3_price_stocks/pages/stocks_search_page.dart';
-import 'package:b3_price_stocks/pages/home_page.dart';
+import 'package:b3_price_stocks/pages/settings/settings_page.dart';
+import 'package:b3_price_stocks/pages/detail_stock/stock_detail_page.dart';
+import 'package:b3_price_stocks/pages/search_stocks/stocks_search_page.dart';
+import 'package:b3_price_stocks/pages/home/home_page.dart';
 import 'package:b3_price_stocks/providers/menu_principal_provider.dart';
 import 'package:b3_price_stocks/providers/stock_info_provaider.dart';
 import 'package:b3_price_stocks/providers/stocks_provider.dart';

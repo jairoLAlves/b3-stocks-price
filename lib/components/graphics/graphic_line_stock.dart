@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:b3_price_stocks/extensions/stocks_extensions.dart';
 
-import '../model/stock_info_model.dart';
-import '../providers/stock_info_provaider.dart';
-import '../util/enums.dart';
+import '../../model/stock_info_model.dart';
+import '../../providers/stock_info_provaider.dart';
+import '../../util/enums.dart';
 import 'historical_price_choicechip.dart';
 
 class GraphicLineStock extends StatefulWidget {

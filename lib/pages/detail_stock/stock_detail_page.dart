@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../components/graphic_line_stock.dart';
-import '../components/pane_item_info.dart';
-import '../model/stock.dart';
-import '../model/stock_info_model.dart';
-import '../providers/stock_info_provaider.dart';
-import '../util/enums.dart';
+import '../../components/graphics/graphic_line_stock.dart';
+import 'components/pane_item_info.dart';
+import '../../model/stock.dart';
+import '../../model/stock_info_model.dart';
+import '../../providers/stock_info_provaider.dart';
+import '../../util/enums.dart';
 import 'package:provider/provider.dart';
 
 //how to get the stock data of Tesla in dadrt?

@@ -1,6 +1,7 @@
+import 'package:b3_price_stocks/util/enums.dart';
 import 'package:flutter/material.dart';
 
-import '../util/enums.dart';
+
 
 DropdownMenuItem<StocksSortBy> dropdownMenuItemSorted({
   required BuildContext context,

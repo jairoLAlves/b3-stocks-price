@@ -12,7 +12,7 @@ class StocksRepository with IStockInfo implements IStocks {
   final dio = Dio(BaseOptions(
     baseUrl: _baseUrl,
     connectTimeout: const Duration(milliseconds: 50000),
-    receiveTimeout:  const Duration(milliseconds: 50000),
+    receiveTimeout: const Duration(milliseconds: 50000),
     contentType: 'application/json', // Added contentType here
   ));
 
@@ -56,12 +56,9 @@ class StocksRepository with IStockInfo implements IStocks {
     final String urlCompleta =
         '$_baseUrl/$symbolList?range=${getValidRangeString(range)}&interval=${getValidRangeString(interval)}&fundamental=$fundamental&dividends=$dividends';
 
-    Response? response =
-        symbolList.isNotEmpty ? await dio.get(urlCompleta) : null;
+    Response? response = await dio.get(urlCompleta);
 
     Map<String, dynamic> stocksInfo = <String, dynamic>{};
-
-    if (response != null) stocksInfo = response.data;
 
     return StocksInfoModel.fromJson(stocksInfo);
   }

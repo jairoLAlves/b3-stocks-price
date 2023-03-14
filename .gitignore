@@ -24,6 +24,8 @@ test/
 
 # Flutter/Dart/Pub related
 **/doc/api/
+**/linux/
+**/test/
 **/ios/Flutter/.last_build_id
 .dart_tool/
 .flutter-plugins

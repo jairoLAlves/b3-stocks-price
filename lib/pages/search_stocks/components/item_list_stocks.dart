@@ -1,10 +1,10 @@
-import 'package:b3_price_stocks/components/sf_chart_candle.dart';
+import 'package:b3_price_stocks/components/graphics/sf_chart_candle.dart';
 import 'package:b3_price_stocks/model/stock.dart';
 import 'package:b3_price_stocks/routes/routes_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
-import 'logo_stock_svg.dart';
+import '../../../components/logo_stock_svg.dart';
 
 class ItemListStocks extends StatefulWidget {
   final Stock stock;

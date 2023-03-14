@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../interfaces/stocks_interface.dart';
@@ -11,7 +12,6 @@ class StockInfoProvider with ChangeNotifier {
 
   ValueNotifier<StatusGetStocks> stateInfoAllRange =
       ValueNotifier<StatusGetStocks>(StatusGetStocks.start);
-
   final List<StockInfoModel> _listaFinal = <StockInfoModel>[];
 
   StockInfoModel getStockInfo(String StockSymbol) {
@@ -46,6 +46,7 @@ class StockInfoProvider with ChangeNotifier {
         stateInfoAllRange.value = StatusGetStocks.success;
         notifyListeners();
       } catch (e) {
+        debugPrint("$e");
         stateInfoAllRange.value = StatusGetStocks.error;
       }
     } else {

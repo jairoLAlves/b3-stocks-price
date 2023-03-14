@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 
-import '../model/item_info_expansion_panel_model.dart';
+import '../models/item_info_expansion_panel_model.dart';
 
 ExpansionPanel infoStockPanel({
   required ItemInfoExpansionPanelModel itemInfoPanel,
