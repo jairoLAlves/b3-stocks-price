@@ -1,14 +1,15 @@
+import 'package:b3_price_stocks/model/stocks_info_model.dart';
+import 'package:b3_price_stocks/services/stocks_http_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '../interfaces/stocks_interface.dart';
+import '../interfaces/stocks_info_interface.dart';
 import '../model/stock_info_model.dart';
 import '../repository/stocks_repository.dart';
 import '../util/enums.dart';
 
 class StockInfoProvider with ChangeNotifier {
-  final IStockInfo _repository = StocksRepository();
-  static bool isPrimary = true;
+  final IStockInfo _repository = StocksRepository(StocksHttpService());
 
   ValueNotifier<StatusGetStocks> stateInfoAllRange =
       ValueNotifier<StatusGetStocks>(StatusGetStocks.start);
@@ -28,29 +29,30 @@ class StockInfoProvider with ChangeNotifier {
     ValidRangesEnum interval = ValidRangesEnum.one_d,
     bool dividends = true,
   }) async {
-    if (StockInfoProvider.isPrimary) {
-      try {
-        stateInfoAllRange.value = StatusGetStocks.loading;
-        var resp = await _repository.getAllStocksInfo(
-          symbols: <String>[symbol],
-          interval: interval,
-          range: range,
-          dividends: dividends,
-        );
+    try {
+      stateInfoAllRange.value = StatusGetStocks.loading;
 
-        StockInfoModel velho = getStockInfo(symbol);
+      StocksInfoModel stocksInfoModel = await _repository.getAllStocksInfo(
+        symbols: <String>[symbol],
+        interval: interval,
+        range: range,
+        dividends: dividends,
+      );
 
-        if (_listaFinal.contains(velho)) _listaFinal.remove(velho);
+      StockInfoModel velho = getStockInfo(symbol);
 
-        if (resp.results != null) _listaFinal.addAll(resp.results!);
-        stateInfoAllRange.value = StatusGetStocks.success;
-        notifyListeners();
-      } catch (e) {
-        debugPrint("$e");
-        stateInfoAllRange.value = StatusGetStocks.error;
-      }
-    } else {
-      StockInfoProvider.isPrimary = false;
+      if (_listaFinal.contains(velho)) _listaFinal.remove(velho);
+
+      if (stocksInfoModel.results != null)
+        _listaFinal.addAll(stocksInfoModel.results!);
+
+      stateInfoAllRange.value = StatusGetStocks.success;
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint("erro no provider: $e");
+      stateInfoAllRange.value = StatusGetStocks.error;
+      notifyListeners();
     }
   }
 }

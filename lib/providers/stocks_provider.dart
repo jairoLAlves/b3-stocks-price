@@ -1,14 +1,16 @@
 import 'package:b3_price_stocks/extensions/stocks_extensions.dart';
 import 'package:b3_price_stocks/model/stock_info_model.dart';
+import 'package:b3_price_stocks/services/stocks_http_service.dart';
 import 'package:flutter/material.dart';
 
-import '../model/stock.dart';
 import '../interfaces/stocks_interface.dart';
+import '../model/stock.dart';
+import '../interfaces/stocks_info_interface.dart';
 import '../repository/stocks_repository.dart';
 import '../util/enums.dart';
 
 class StocksProvider with ChangeNotifier {
-  final IStocks _repository = StocksRepository();
+  final IStocks _repository = StocksRepository(StocksHttpService());
   List<Stock> _stoks = <Stock>[];
   //var listaFinal = <StockInfoModel>{};
   //List<String> listaStockName = [];

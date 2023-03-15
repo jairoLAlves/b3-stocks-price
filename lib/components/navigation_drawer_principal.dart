@@ -1,3 +1,4 @@
+import 'package:b3_price_stocks/controllers/theme_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../model/Item_menu_principal_model.dart';
@@ -101,6 +102,28 @@ class _NavigationDrawerPrincipalState extends State<NavigationDrawerPrincipal> {
                   },
                 ),
               ),
+            ),
+            ValueListenableBuilder<bool>(
+              valueListenable: ThemeController.instance.themeLightOrDart,
+              builder: (context, value, child) {
+                return Container(
+                  margin: const EdgeInsets.symmetric(vertical: 28),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: value
+                            ? const Icon(Icons.light_mode)
+                            : const Icon(Icons.dark_mode),
+                        onPressed: () {
+                          setState(() =>
+                              ThemeController.instance.changeTheme(!value));
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
             InkWell(
               onTap: () => setState(() {

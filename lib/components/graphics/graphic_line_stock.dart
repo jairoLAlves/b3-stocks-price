@@ -135,7 +135,7 @@ class _GraphicLineStockState extends State<GraphicLineStock> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('reatualizando grafico: ${widget.stockName}');
+    //debugPrint('reatualizando grafico: ${widget.stockName}');
 
     var controller = context.watch<StockInfoProvider>();
     StockInfoModel stockInfo = controller.getStockInfo(widget.stockName);

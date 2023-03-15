@@ -7,7 +7,7 @@ class StocksInfoModel {
 
   StocksInfoModel({this.results, this.requestedAt});
 
-  StocksInfoModel.fromJson(Map<String, dynamic> json) {
+  StocksInfoModel.fromJson( Map<String, dynamic>  json) {
     if (json['results'] != null) {
       results = <StockInfoModel>[];
       json['results'].forEach((v) {

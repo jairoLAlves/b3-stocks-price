@@ -98,7 +98,7 @@ class _PanelItemInfoState extends State<PanelItemInfo> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.stockInfoModel);
+    
     return Center(
       child: Container(
         constraints: const BoxConstraints(

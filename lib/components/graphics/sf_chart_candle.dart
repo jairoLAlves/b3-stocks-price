@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-import 'package:b3_price_stocks/extensions/stocks_extensions.dart';
+import 'package:b3_price_stocks/controllers/theme_controller.dart';
 
 import '../../model/chart_sample_date.dart';
 import '../../model/stock_info_model.dart';
@@ -34,6 +34,8 @@ class _SFChartCandleState extends State<SFChartCandle> {
   late ValidRangesEnum validRange = ValidRangesEnum.five_d;
   late List<ChartSampleDate> _listDate = <ChartSampleDate>[];
 
+  ValueNotifier<TypesGraphic> typeGraphic = ValueNotifier(TypesGraphic.candle);
+
   @override
   void initState() {
     super.initState();
@@ -46,6 +48,9 @@ class _SFChartCandleState extends State<SFChartCandle> {
 
     //stateInfoAllRange
   }
+
+  void setTypeGraphic(TypesGraphic type) =>
+      setState(() => typeGraphic.value = type);
 
   List<ChartSampleDate> get getDateChandles {
     return controller
@@ -104,14 +109,33 @@ class _SFChartCandleState extends State<SFChartCandle> {
           //padding: const EdgeInsets.all(4.0),
           child: SfCartesianChart(
             series: <CartesianSeries>[
-              CandleSeries<ChartSampleDate, DateTime>(
-                dataSource: _listDate,
-                xValueMapper: (ChartSampleDate sales, _) => sales.dateTime,
-                lowValueMapper: (ChartSampleDate sales, _) => sales.low,
-                highValueMapper: (ChartSampleDate sales, _) => sales.high,
-                openValueMapper: (ChartSampleDate sales, _) => sales.open,
-                closeValueMapper: (ChartSampleDate sales, _) => sales.close,
-              ),
+              if (typeGraphic.value == TypesGraphic.candle)
+                CandleSeries<ChartSampleDate, DateTime>(
+                  dataSource: _listDate,
+                  xValueMapper: (ChartSampleDate sales, _) => sales.dateTime,
+                  lowValueMapper: (ChartSampleDate sales, _) => sales.low,
+                  highValueMapper: (ChartSampleDate sales, _) => sales.high,
+                  openValueMapper: (ChartSampleDate sales, _) => sales.open,
+                  closeValueMapper: (ChartSampleDate sales, _) => sales.close,
+                ),
+              if (typeGraphic.value == TypesGraphic.hiloOpenClose)
+                HiloOpenCloseSeries<ChartSampleDate, DateTime>(
+                  dataSource: _listDate,
+                  xValueMapper: (ChartSampleDate sales, _) => sales.dateTime,
+                  lowValueMapper: (ChartSampleDate sales, _) => sales.low,
+                  highValueMapper: (ChartSampleDate sales, _) => sales.high,
+                  openValueMapper: (ChartSampleDate sales, _) => sales.open,
+                  closeValueMapper: (ChartSampleDate sales, _) => sales.close,
+                ),
+                 if (typeGraphic.value == TypesGraphic.line)
+                LineSeries<ChartSampleDate, DateTime>(
+
+                  dataSource: _listDate,
+                  xValueMapper: (ChartSampleDate sales, _) => sales.dateTime,
+                  yValueMapper: (ChartSampleDate sales, _) => sales.close,
+                ),
+
+
               // LineSeries<ChartSampleDate, DateTime>(
               //   dataSource: _listDate,
               //   xValueMapper: (ChartSampleDate sales, _) => sales.dateTime,
@@ -122,7 +146,7 @@ class _SFChartCandleState extends State<SFChartCandle> {
                 // dateFormat: ,
                 ),
             primaryYAxis: NumericAxis(
-                minimum: 0.01,
+                // minimum: 0.01,
                 numberFormat: NumberFormat.simpleCurrency(decimalDigits: 2)),
             //isTransposed: true,
           ),
@@ -144,16 +168,10 @@ class _SFChartCandleState extends State<SFChartCandle> {
         symbol: widget.stockName, range: validRange);
   }
 
-  
-
   @override
   Widget build(BuildContext context) {
-    
-  
     var controller = context.watch<StockInfoProvider>();
     StockInfoModel stockInfo = controller.getStockInfo(widget.stockName);
-
-
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -162,7 +180,9 @@ class _SFChartCandleState extends State<SFChartCandle> {
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            const DropdownButtonExample(),
+            DropdownButtonExample(
+              setTypeGraphic: setTypeGraphic,
+            ),
             IconButton(
               onPressed: widget.fullScreenGraphic,
               icon: Icon(widget.isExpandedGraphic
@@ -200,19 +220,27 @@ class _SFChartCandleState extends State<SFChartCandle> {
 enum TypesGraphic {
   hiloOpenClose,
   candle,
+  line,
 }
 
 class DropdownMenuItemChart {
   Widget widget;
   String title;
+  TypesGraphic typeGraphic;
+
   DropdownMenuItemChart({
     required this.widget,
     required this.title,
+    required this.typeGraphic,
   });
 }
 
 class DropdownButtonExample extends StatefulWidget {
-  const DropdownButtonExample({super.key});
+  final Function(TypesGraphic type) setTypeGraphic;
+  const DropdownButtonExample({
+    Key? key,
+    required this.setTypeGraphic,
+  }) : super(key: key);
 
   @override
   State<DropdownButtonExample> createState() => _DropdownButtonExampleState();
@@ -231,17 +259,32 @@ class _DropdownButtonExampleState extends State<DropdownButtonExample> {
     super.initState();
     listaMenuChart = <DropdownMenuItemChart>[
       DropdownMenuItemChart(
-          widget: const Icon(Icons.candlestick_chart), title: "Velas"),
+          typeGraphic: TypesGraphic.candle,
+          widget: const Icon(Icons.candlestick_chart),
+          title: "Velas"),
       DropdownMenuItemChart(
-          widget: SvgPicture.asset(assetName,
-              height: 36.0,
-              width: 36.0,
-              semanticsLabel: 'barra',
-              placeholderBuilder: (BuildContext context) =>
-                  const Center(child: CircularProgressIndicator())),
+          typeGraphic: TypesGraphic.hiloOpenClose,
+          widget: ValueListenableBuilder(
+            valueListenable: ThemeController.instance.themeLightOrDart,
+            builder: (context, value, child) {
+              return SvgPicture.asset(assetName,
+                  height: 36.0,
+                  width: 36.0,
+                  fit: BoxFit.fitWidth,
+                  theme: SvgTheme(
+                      currentColor: value ? Colors.black : Colors.white),
+                  semanticsLabel: 'barra',
+                  colorFilter: ColorFilter.mode(
+                      value ? Colors.black : Colors.white, BlendMode.srcIn),
+                  placeholderBuilder: (BuildContext context) =>
+                      const Center(child: CircularProgressIndicator()));
+            },
+          ),
           title: "Barras"),
       DropdownMenuItemChart(
-          widget: const Icon(Icons.show_chart), title: "Linha"),
+          typeGraphic: TypesGraphic.line,
+          widget: const Icon(Icons.show_chart),
+          title: "Linha"),
     ];
     dropdownValue.value = listaMenuChart.first;
   }
@@ -266,10 +309,12 @@ class _DropdownButtonExampleState extends State<DropdownButtonExample> {
           }).toList();
         },
         onChanged: (DropdownMenuItemChart? value) {
-          // This is called when the user selects an item.
           setState(() {
             dropdownValue.value = value!;
           });
+          if (value != null) {
+            widget.setTypeGraphic(value.typeGraphic);
+          }
         },
         items: listaMenuChart.map<DropdownMenuItem<DropdownMenuItemChart>>(
             (DropdownMenuItemChart value) {

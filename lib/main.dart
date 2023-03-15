@@ -13,6 +13,8 @@ import 'package:b3_price_stocks/src/shared/themes/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'controllers/theme_controller.dart';
+
 class PostHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(context) {
@@ -42,19 +44,23 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider<MenuPrincipalProvider>(
               create: (ctx) => MenuPrincipalProvider()),
         ],
-        child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          
-          title: 'Stocks Prices',
-          themeMode: ThemeMode.system,
-          theme: lightTheme,
-          darkTheme: dartTheme,
-          initialRoute: RoutesPages.HOME,
-          routes: {
-            RoutesPages.HOME: (ctx) => const HomePage(),
-            RoutesPages.STOCKSSEARCH: (ctx) => const StocksSearchPage(),
-            RoutesPages.STOCKDETAIL: (ctx) => const StockDetailPage(),
-            RoutesPages.SETTINGS: (ctx) => const SettingsPage(),
+        child: ValueListenableBuilder(
+          valueListenable: ThemeController.instance.themeLightOrDart,
+          builder: (context, value, child) {
+            return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              title: 'Stocks Prices',
+              themeMode: value ?  ThemeMode.light : ThemeMode.dark,
+              theme: lightTheme,
+              darkTheme: dartTheme,
+              initialRoute: RoutesPages.HOME,
+              routes: {
+                RoutesPages.HOME: (ctx) => const HomePage(),
+                RoutesPages.STOCKSSEARCH: (ctx) => const StocksSearchPage(),
+                RoutesPages.STOCKDETAIL: (ctx) => const StockDetailPage(),
+                RoutesPages.SETTINGS: (ctx) => const SettingsPage(),
+              },
+            );
           },
         ));
   }

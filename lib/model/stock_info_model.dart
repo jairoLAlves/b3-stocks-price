@@ -135,7 +135,7 @@ class StockInfoModel {
     twoHundredDayAverageChange = json['twoHundredDayAverageChange'];
     twoHundredDayAverageChangePercent =
         json['twoHundredDayAverageChangePercent'];
-    validRanges = json['validRanges'].cast<String>();
+    validRanges = json['validRanges']?.cast<String>();
     if (json['historicalDataPrice'] != null) {
       historicalDataPrice = <HistoricalDataPrice>[];
       json['historicalDataPrice'].forEach((v) {
