@@ -41,4 +41,4 @@ Contribuições são sempre bem-vindas! Para contribuir com o projeto, siga os s
 
 ## Autor
 
-Este aplicativo foi desenvolvido por [Jairo laranjeira Alves](#https://github.com/jairoLAlves).
+Este aplicativo foi desenvolvido por [Jairo laranjeira Alves](https://github.com/jairoLAlves).
