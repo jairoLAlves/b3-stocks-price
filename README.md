@@ -4,10 +4,10 @@
 
 ## Funcionalidades
 
-- <input type="checkbox" checked> Visualização de gráficos dos preços das ações;
-- <input type="checkbox" checked> Pesquisa de preços de ações por código;
-- <input type="checkbox"> Favoritar ações para acesso rápido;
-- <input type="checkbox"> Visualização de informações adicionais sobre as ações selecionadas.
+- [x] Visualização de gráficos dos preços das ações;
+- [x] Pesquisa de preços de ações por código;
+- [ ] Favoritar ações para acesso rápido;
+- [ ] Visualização de informações adicionais sobre as ações selecionadas.
 
 ## Dependências
 
