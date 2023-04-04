@@ -14,6 +14,8 @@ class Stock {
   String? _logo;
   String? _sector;
 
+ 
+
   Stock({
     stock,
     name,

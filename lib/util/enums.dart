@@ -4,6 +4,11 @@ enum StatusGetStocks{
 start, loading, success, error
 }
 
+enum TypesGraphic {
+  hiloOpenClose,
+  candle,
+  line,
+}
 
 
 

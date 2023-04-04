@@ -11,13 +11,15 @@ import '../util/enums.dart';
 class StockInfoProvider with ChangeNotifier {
   final IStockInfo _repository = StocksRepository(StocksHttpService());
 
+
+
   ValueNotifier<StatusGetStocks> stateInfoAllRange =
       ValueNotifier<StatusGetStocks>(StatusGetStocks.start);
   final List<StockInfoModel> _listaFinal = <StockInfoModel>[];
 
-  StockInfoModel getStockInfo(String StockSymbol) {
+  StockInfoModel getStockInfo(String symbol) {
     var retorno = _listaFinal.firstWhere(
-      (stocoInfo) => stocoInfo.symbol == StockSymbol,
+      (stockInfo) => stockInfo.symbol == symbol,
       orElse: () => StockInfoModel(),
     );
     return retorno;

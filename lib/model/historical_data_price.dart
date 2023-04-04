@@ -1,5 +1,4 @@
-import 'package:candlesticks_plus/candlesticks_plus.dart';
-
+import '../util/enums.dart';
 import 'chart_sample_date.dart';
 
 class HistoricalDataPrice {
@@ -9,6 +8,7 @@ class HistoricalDataPrice {
   num? low;
   num? close;
   num? volume;
+
 
   HistoricalDataPrice({
     this.date,
@@ -39,25 +39,9 @@ class HistoricalDataPrice {
     return data;
   }
 
-  Candle get toCandle {
-    DateTime _date = DateTime.fromMillisecondsSinceEpoch(date!.toInt() * 1000);
-    double _high = high!.toDouble();
-    double _low = low!.toDouble();
-    double _open = open!.toDouble();
-    double _close = close!.toDouble();
-    double _volume = volume!.toDouble();
-    return Candle(
-      date: _date,
-      high: _high,
-      low: _low,
-      open: _open,
-      close: _close,
-      volume: _volume,
-    );
-  }
-
   ChartSampleDate get toChartSampleDate {
-    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(date!.toInt() * 1000);
+    DateTime dateTime =
+        DateTime.fromMillisecondsSinceEpoch(date!.toInt() * 1000);
 
     return ChartSampleDate(
       dateTime: dateTime,

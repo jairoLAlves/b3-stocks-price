@@ -4,7 +4,7 @@ import 'package:b3_price_stocks/routes/routes_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
-import '../../../components/logo_stock_svg.dart';
+import '../../../components/widgets/logo_stock_svg.dart';
 
 class ItemListStocks extends StatefulWidget {
   final Stock stock;
@@ -204,14 +204,14 @@ class _ItemListStocksState extends State<ItemListStocks> {
   Widget showGraphicWidget() {
     return isFullScreenGraphic.value
         ? SFChartCandle(
-            stockName: widget.stock.stock,
+            stock: widget.stock,
             isExpandedGraphic: isFullScreenGraphic.value,
             fullScreenGraphic: () {
               Navigator.of(context).pop();
               setFullScreenGraphic();
             })
         : SFChartCandle(
-            stockName: widget.stock.stock,
+            stock: widget.stock,
             isExpandedGraphic: isFullScreenGraphic.value,
             fullScreenGraphic: () => showFullGraphic(),
           );

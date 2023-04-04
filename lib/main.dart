@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:b3_price_stocks/mockdata/mock_data.dart';
 import 'package:b3_price_stocks/pages/settings/settings_page.dart';
 import 'package:b3_price_stocks/pages/detail_stock/stock_detail_page.dart';
 import 'package:b3_price_stocks/pages/search_stocks/stocks_search_page.dart';
@@ -10,6 +9,8 @@ import 'package:b3_price_stocks/providers/stock_info_provaider.dart';
 import 'package:b3_price_stocks/providers/stocks_provider.dart';
 import 'package:b3_price_stocks/routes/routes_pages.dart';
 import 'package:b3_price_stocks/src/shared/themes/themes.dart';
+import 'package:device_preview/device_preview.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -27,7 +28,12 @@ class PostHttpOverrides extends HttpOverrides {
 void main() {
   HttpOverrides.global = PostHttpOverrides();
 
-  runApp(const MyApp());
+  runApp(
+    DevicePreview(
+    enabled: !kReleaseMode,
+    builder: (context) => MyApp(), // Wrap your app
+  ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -48,9 +54,12 @@ class MyApp extends StatelessWidget {
           valueListenable: ThemeController.instance.themeLightOrDart,
           builder: (context, value, child) {
             return MaterialApp(
+              useInheritedMediaQuery: true,
+              locale: DevicePreview.locale(context),
+              builder: DevicePreview.appBuilder,
               debugShowCheckedModeBanner: false,
               title: 'Stocks Prices',
-              themeMode: value ?  ThemeMode.light : ThemeMode.dark,
+              themeMode: value ? ThemeMode.light : ThemeMode.dark,
               theme: lightTheme,
               darkTheme: dartTheme,
               initialRoute: RoutesPages.HOME,

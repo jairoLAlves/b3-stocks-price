@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import '../util/enums.dart';
 import 'dividends_data.dart';
 import 'historical_data_price.dart';
 
@@ -68,6 +69,10 @@ class StockInfoModel {
   String? logourl;
   ///dados de dividendos 
   DividendsData? dividendsData;
+
+  ValidRangesEnum  rangeChip = ValidRangesEnum.five_d;
+
+
 
 
   StockInfoModel(
