@@ -5,13 +5,12 @@ import 'package:b3_price_stocks/providers/stocks_provider.dart';
 //import 'package:b3_price_stocks/routes/routes_pages.dart';
 
 import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
 
+import '../../util/enums.dart';
 import 'components/bottom_sheet_search.dart';
 import 'components/item_list_stocks.dart';
 import 'components/search_input_widget.dart';
-import '../../util/enums.dart';
 
 class StocksSearchPage extends StatefulWidget {
   const StocksSearchPage({super.key});
@@ -21,84 +20,35 @@ class StocksSearchPage extends StatefulWidget {
 }
 
 class _StocksSearchPageState extends State<StocksSearchPage> {
-  late final controllerStock;
-
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+  late  StocksProvider stocksProvider;
+   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
-
-  final ValueNotifier<List<Stock>> _listStocksHome = ValueNotifier(<Stock>[]);
-  final ValueNotifier<List<String>> stockSymbolList = ValueNotifier(<String>[]);
-  ValueNotifier<bool> isLoading = ValueNotifier(true);
 
   @override
   void initState() {
     super.initState();
-    _listStocksHome.addListener(() {
-      stockSymbolList.value = _listStocksHome.value.stockSymbolList();
-      // print(stockSymbolList.value);
+    stocksProvider = context.read<StocksProvider>();
+    stocksProvider.listStocks.addListener(() {
+      stocksProvider.stockSymbolList.value =
+          stocksProvider.listStocks.value.stockSymbolList();
     });
 
-    //loadList();
-    controllerStock = context.read<StocksProvider>();
 
-    controllerStock.updateStocks().then((value) {
-      setState(() {
-        isLoading.value = false;
-        _listStocksHome.value = value;
-      });
-    });
+   
+
+    stocksProvider.loadStocks();
   }
 
-  Future<void> loadList() async {
-    context.read<StocksProvider>().updateStocks().then((value) {
-      setState(() {
-        isLoading.value = false;
-        _listStocksHome.value = value;
-      });
-    });
-  }
+  
 
-  final ValueNotifier _stocksSortBy =
-      ValueNotifier<StocksSortBy>(StocksSortBy.volume);
 
-  final ValueNotifier _stocksSectors = ValueNotifier<sectors>(sectors.All);
 
-  searchStockFilter(String value) {
-    setState(() {
-      _listStocksHome.value =
-          Provider.of<StocksProvider>(context, listen: false)
-              .searchStockFilter(value, _stocksSectors.value);
-      _listStocksHome.value.sortOrderStocks(_stocksSortBy.value);
-    });
-  }
 
-  filterList() {
-    setState(() {
-      _listStocksHome.value =
-          Provider.of<StocksProvider>(context, listen: false)
-              .filterListStocks(_stocksSectors.value);
-      _listStocksHome.value.sortOrderStocks(_stocksSortBy.value);
-    });
-  }
-
-  sortedList() {
-    setState(() {
-      _listStocksHome.value.sortOrderStocks(_stocksSortBy.value);
-    });
-  }
-
-  void onActionDropdownMenuItemSorted(StocksSortBy stocksSortBy) {
-    setState(() {
-      _stocksSortBy.value = stocksSortBy;
-    });
-    sortedList();
-  }
-
-  void onActionDropdownMenuItemSectors(sectors sector) {
-    setState(() {
-      _stocksSectors.value = sector;
-    });
-    filterList();
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    stocksProvider.dispose();
   }
 
   Widget _start() {
@@ -117,36 +67,44 @@ class _StocksSearchPageState extends State<StocksSearchPage> {
     ));
   }
 
-  Widget stateManagement(StatusGetStocks state) {
-    switch (state) {
-      case StatusGetStocks.start:
-        return _start();
-      case StatusGetStocks.loading:
-        return _loading();
-      case StatusGetStocks.success:
-        return ListView.builder(
-          itemCount: _listStocksHome.value.length,
-          itemBuilder: (context, index) {
-            Stock stock = _listStocksHome.value.elementAt(index);
+  Widget stateManagement() {
+    return ValueListenableBuilder<StatusGetStocks>(
+      valueListenable: stocksProvider.stateUpdateStocks,
+      builder: (context, stateUpdateStocks, child) {
+        switch (stateUpdateStocks) {
+          case StatusGetStocks.start:
+            return _start();
 
-            return ItemListStocks(
-              key: ObjectKey(stock),
-              stock: stock,
+          case StatusGetStocks.loading:
+            return _loading();
+
+          case StatusGetStocks.success:
+            return ListView.builder(
+              itemCount: stocksProvider.listStocks.value.length,
+              itemBuilder: (context, index) {
+                Stock stock = stocksProvider.listStocks.value.elementAt(index);
+
+                return ItemListStocks(
+                  key: ObjectKey(stock),
+                  stock: stock,
+                );
+              },
             );
-          },
-        );
-      case StatusGetStocks.error:
-        return _error(loadList);
-    }
+
+          case StatusGetStocks.error:
+            return _error(stocksProvider.loadStocks);
+        }
+        ;
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    var controller = context.watch<StocksProvider>();
-
     final isExpanded = MediaQuery.of(context).size.width > 640;
     // final width = MediaQuery.of(context).size.width;
     // final height = MediaQuery.of(context).size.height;
+    stocksProvider = context.watch<StocksProvider>();
 
     return SafeArea(
       child: Scaffold(
@@ -160,10 +118,12 @@ class _StocksSearchPageState extends State<StocksSearchPage> {
                       context: context,
                       builder: (ctx) => BottomSheetSearch(
                         context: ctx,
-                        onActionSector: onActionDropdownMenuItemSectors,
-                        onActionSorted: onActionDropdownMenuItemSorted,
-                        sector: _stocksSectors.value,
-                        stocksSortBy: _stocksSortBy.value,
+                        onActionSector:
+                            stocksProvider.onActionDropdownMenuItemSectors,
+                        onActionSorted:
+                            stocksProvider.onActionDropdownMenuItemSorted,
+                        sector: stocksProvider.stocksSectors.value,
+                        stocksSortBy: stocksProvider.stocksSortBy.value,
                       ),
                     ),
                     icon: const Icon(Icons.settings),
@@ -176,8 +136,8 @@ class _StocksSearchPageState extends State<StocksSearchPage> {
               if (isExpanded) const NavigationDrawerPrincipal(),
               Expanded(
                 child: RefreshIndicator(
-                  key: _refreshIndicatorKey,
-                  onRefresh: loadList,
+                  key: refreshIndicatorKey,
+                  onRefresh: stocksProvider.loadStocks,
                   child: Column(
                     children: [
                       Container(
@@ -188,9 +148,10 @@ class _StocksSearchPageState extends State<StocksSearchPage> {
                           children: [
                             Flexible(
                               child: SearchInputWidget(
-                                stockSymbolList: stockSymbolList,
-                                searchStockFilter: searchStockFilter,
-                                filterList: filterList,
+                                stockSymbolList: stocksProvider.stockSymbolList,
+                                searchStockFilter:
+                                    stocksProvider.searchStockFilter,
+                                filterList: stocksProvider.filterList,
                               ),
                             ),
                             if (isExpanded)
@@ -200,12 +161,14 @@ class _StocksSearchPageState extends State<StocksSearchPage> {
                                     context: context,
                                     builder: (ctx) => BottomSheetSearch(
                                       context: ctx,
-                                      onActionSector:
-                                          onActionDropdownMenuItemSectors,
-                                      onActionSorted:
-                                          onActionDropdownMenuItemSorted,
-                                      sector: _stocksSectors.value,
-                                      stocksSortBy: _stocksSortBy.value,
+                                      onActionSector: stocksProvider
+                                          .onActionDropdownMenuItemSectors,
+                                      onActionSorted: stocksProvider
+                                          .onActionDropdownMenuItemSorted,
+                                      sector:
+                                          stocksProvider.stocksSectors.value,
+                                      stocksSortBy:
+                                          stocksProvider.stocksSortBy.value,
                                     ),
                                   ),
                                   icon: const Icon(Icons.settings),
@@ -216,10 +179,9 @@ class _StocksSearchPageState extends State<StocksSearchPage> {
                       ),
                       Expanded(
                         child: AnimatedBuilder(
-                          animation: controller.stateUpdateStocks,
+                          animation: stocksProvider.stateUpdateStocks,
                           builder: (context, child) {
-                            return stateManagement(
-                                controller.stateUpdateStocks.value);
+                            return stateManagement();
                           },
                         ),
                       ),

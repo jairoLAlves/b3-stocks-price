@@ -85,15 +85,9 @@ class _StockDetailState extends State<StockDetailPage>
                             return Column(
                               children: [
                                 Container(
-                                  constraints:
-                                      const BoxConstraints(maxHeight: 300, maxWidth: 700),
-                                  child: Card(
-                                      elevation: 1,
-                                      child: (value.symbol != null) ? GraphicLineStock(
-                                        stockName: value.symbol!,
-                                      ): null
-                                      
-                                      ),
+                                  constraints: const BoxConstraints(
+                                      maxHeight: 300, maxWidth: 700),
+                                  child: const Card(),
                                 ),
                                 PanelItemInfo(stockInfoModel: value),
                               ],

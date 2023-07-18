@@ -29,14 +29,10 @@ class _NavigationDrawerPrincipalState extends State<NavigationDrawerPrincipal> {
     super.dispose();
   }
 
-  Widget buildHeader(BuildContext context) => Container(
-        child: Column(
-          children: const [],
-        ),
-      );
-
+  
   @override
   Widget build(BuildContext context) {
+    
     bool bigSize = MediaQuery.of(context).size.width >= 640;
 
     final List<ItemMenuPrincipalModel> intensMenuPrincipal = [
@@ -82,7 +78,7 @@ class _NavigationDrawerPrincipalState extends State<NavigationDrawerPrincipal> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            buildHeader(context),
+            
             Expanded(
               child: ListView.separated(
                 separatorBuilder: (context, index) {

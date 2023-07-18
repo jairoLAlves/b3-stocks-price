@@ -47,7 +47,7 @@ class BottomSheetSearch extends StatelessWidget {
     StocksSortBy.stock,
   ];
 
-  BottomSheetSearch({
+   BottomSheetSearch({
     required this.onActionSector,
     required this.onActionSorted,
     required this.sector,

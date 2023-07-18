@@ -5,6 +5,7 @@ import '../../model/choice_chip_range_date_model.dart';
 import '../../util/enums.dart';
 
 class HistoricalPriceChoicechipRangeDate extends StatelessWidget {
+  
   var ChoicechipRangeDateList = <ChoicechipRangeDate>[
     // ChoicechipRangeDate(
     //   label: '1D',

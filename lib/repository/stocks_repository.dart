@@ -10,7 +10,7 @@ import '../util/enums.dart';
 
 class StocksRepository with IStockInfo implements IStocks {
   final StocksHttpService service;
-  StocksRepository(this.service);
+  StocksRepository({required this.service});
 
   @override
   Future<Stocks> getAllStocks() async {
@@ -20,8 +20,6 @@ class StocksRepository with IStockInfo implements IStocks {
     stocks = Stocks.fromJson(json);
     return stocks;
   }
-
- 
 
   @override
   Future<StocksInfoModel> getAllStocksInfo({
@@ -34,12 +32,11 @@ class StocksRepository with IStockInfo implements IStocks {
     StocksInfoModel stocksInfo = StocksInfoModel();
 
     var json = await service.getAllStocksInfo(
-      symbols:symbols,
-    range:range, 
-     interval:interval,
-     fundamental: fundamental,
-     dividends: dividends,
-
+      symbols: symbols,
+      range: range,
+      interval: interval,
+      fundamental: fundamental,
+      dividends: dividends,
     );
 
     stocksInfo = StocksInfoModel.fromJson(json);

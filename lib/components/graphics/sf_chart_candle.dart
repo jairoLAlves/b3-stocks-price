@@ -14,6 +14,7 @@ import '../widgets/loading.dart';
 import '../widgets/start.dart';
 import 'dropdown_button_graphic_types.dart';
 import 'historical_price_choicechip.dart';
+import 'mvvm/sf_chart_candle_view_model.dart';
 
 class SFChartCandle extends StatefulWidget {
   final Stock stock;
@@ -32,77 +33,15 @@ class SFChartCandle extends StatefulWidget {
 }
 
 class _SFChartCandleState extends State<SFChartCandle> {
-  late final StockInfoProvider controller;
-  late ValueNotifier<ValidRangesEnum> validRange =
-      ValueNotifier<ValidRangesEnum>(ValidRangesEnum.five_d);
-
-
-  late List<ChartSampleDate> _listDate = <ChartSampleDate>[];
-
-  late ChartSeriesController? _chartSeriesControllerCandle = null,
-      _chartSeriesControllerHilo = null,
-      _chartSeriesControllerLine = null;
-  late SelectionBehavior? _selectionBehavior = null;
-  late ZoomPanBehavior? _zoomPanBehavior = null;
-  late TrackballBehavior? _trackballBehavior = null;
-  late TooltipBehavior? _tooltipBehavior = null;
-
-  ValueNotifier<TypesGraphic> typeGraphic = ValueNotifier(TypesGraphic.candle);
+  late final SfChartCandleViewModel sfChartCandleViewModel;
 
   @override
   void initState() {
-    _tooltipBehavior = TooltipBehavior(
-      enable: true,
-    );
-    _zoomPanBehavior = ZoomPanBehavior(
-      // Enables pinch zooming
-      enablePinching: true,
-
-      // Performs zooming on double tap
-      enableDoubleTapZooming: true,
-      enableSelectionZooming: true,
-      selectionRectBorderColor: Colors.black,
-      selectionRectBorderWidth: 1,
-      selectionRectColor: Colors.grey,
-      enableMouseWheelZooming: true,
-      enablePanning: true,
-    );
-    _trackballBehavior = TrackballBehavior(
-      tooltipDisplayMode: TrackballDisplayMode.floatAllPoints,
-      enable: true,
-      tooltipSettings: const InteractiveTooltip(
-        enable: true,
-      ),
-      markerSettings: const TrackballMarkerSettings(
-          markerVisibility: TrackballVisibilityMode.visible),
-    );
-    _selectionBehavior = SelectionBehavior(
-      enable: true,
-      selectedColor: Colors.red,
-      unselectedColor: Colors.grey,
-    );
-
     super.initState();
-
-    controller = context.read<StockInfoProvider>();
-    _getStockInfoAllRange();
-    controller.stateInfoAllRange.addListener(() {
-      _listDate = getDateChandles;
-    });
-  }
-
-  void animatedGraphic() {
-    switch (typeGraphic.value) {
-      case TypesGraphic.hiloOpenClose:
-        _chartSeriesControllerHilo?.animate();
-        break;
-      case TypesGraphic.candle:
-        _chartSeriesControllerCandle?.animate();
-        break;
-      case TypesGraphic.line:
-        _chartSeriesControllerLine?.animate();
-        break;
-    }
+    sfChartCandleViewModel = SfChartCandleViewModel(
+      stock: widget.stock,
+      context: context,
+    );
   }
 
   @override
@@ -110,45 +49,17 @@ class _SFChartCandleState extends State<SFChartCandle> {
     super.dispose();
   }
 
-  void setTypeGraphic(TypesGraphic type) {
-    setState(() => typeGraphic.value = type);
-    animatedGraphic();
-  }
-
-  List<ChartSampleDate> get getDateChandles {
-    return controller
-            .getStockInfo(widget.stock.stock)
-            .historicalDataPrice
-            ?.map<ChartSampleDate>((date) => date.toChartSampleDate)
-            .toList() ??
-        <ChartSampleDate>[];
-  }
-
-  void _getStockInfoAllRange() {
-    controller.getStockInfoAllRange(
-      symbol: widget.stock.stock,
-      range: validRange.value,
-    );
-  }
-
-  final double height = 108;
-
-  Widget stateManagement(
-    StatusGetStocks state,
-    Function() onPressedBtnError,
-  ) {
-    switch (state) {
-      case StatusGetStocks.loading:
-        return loading();
-
-      case StatusGetStocks.start:
-        return start();
-      case StatusGetStocks.success:
-        return Container(
-          //padding: const EdgeInsets.all(4.0),
-          child: SfCartesianChart(
+  Widget plotChart() {
+    return ValueListenableBuilder<List<ChartSampleDate>>(
+      valueListenable: sfChartCandleViewModel.listDate,
+      builder: (
+        context,
+        listDate,
+        child,
+      ) {
+        return  SfCartesianChart(
             enableAxisAnimation: true,
-            tooltipBehavior: _tooltipBehavior,
+            tooltipBehavior: sfChartCandleViewModel.tooltipBehavior,
             annotations: <CartesianChartAnnotation>[
               CartesianChartAnnotation(
                 widget: Opacity(
@@ -165,8 +76,8 @@ class _SFChartCandleState extends State<SFChartCandle> {
             ],
 
             plotAreaBorderColor: Theme.of(context).colorScheme.onBackground,
-            zoomPanBehavior: _zoomPanBehavior,
-            trackballBehavior: _trackballBehavior,
+            zoomPanBehavior: sfChartCandleViewModel.zoomPanBehavior,
+            trackballBehavior: sfChartCandleViewModel.trackballBehavior,
             legend: Legend(
               isVisible: false,
               position: LegendPosition.bottom,
@@ -220,7 +131,8 @@ class _SFChartCandleState extends State<SFChartCandle> {
             // ],
 
             series: <CartesianSeries>[
-              if (typeGraphic.value == TypesGraphic.candle)
+              if (sfChartCandleViewModel.typeGraphic.value ==
+                  TypesGraphic.candle)
                 CandleSeries<ChartSampleDate, DateTime>(
                   isVisibleInLegend: false,
                   bearColor: Colors.green,
@@ -230,45 +142,49 @@ class _SFChartCandleState extends State<SFChartCandle> {
                   //isVisible: typeGraphic.value == TypesGraphic.candle,
                   animationDuration: 2000,
                   animationDelay: 1000,
-                  dataSource: _listDate,
+                  dataSource: listDate,
                   xValueMapper: (ChartSampleDate sales, _) => sales.dateTime,
                   lowValueMapper: (ChartSampleDate sales, _) => sales.low,
                   highValueMapper: (ChartSampleDate sales, _) => sales.high,
                   openValueMapper: (ChartSampleDate sales, _) => sales.open,
                   closeValueMapper: (ChartSampleDate sales, _) => sales.close,
                   onRendererCreated: (ChartSeriesController controller) {
-                    _chartSeriesControllerCandle = controller;
+                    sfChartCandleViewModel.chartSeriesControllerCandle =
+                        controller;
                   },
                 ),
-              if (typeGraphic.value == TypesGraphic.hiloOpenClose)
+              if (sfChartCandleViewModel.typeGraphic.value ==
+                  TypesGraphic.hiloOpenClose)
                 HiloOpenCloseSeries<ChartSampleDate, DateTime>(
                   isVisibleInLegend: false,
                   enableTooltip: true,
                   //isVisible: typeGraphic.value == TypesGraphic.hiloOpenClose,
                   animationDuration: 2000,
                   animationDelay: 1000,
-                  dataSource: _listDate,
+                  dataSource: listDate,
                   xValueMapper: (ChartSampleDate sales, _) => sales.dateTime,
                   lowValueMapper: (ChartSampleDate sales, _) => sales.low,
                   highValueMapper: (ChartSampleDate sales, _) => sales.high,
                   openValueMapper: (ChartSampleDate sales, _) => sales.open,
                   closeValueMapper: (ChartSampleDate sales, _) => sales.close,
                   onRendererCreated: (ChartSeriesController controller) {
-                    _chartSeriesControllerHilo = controller;
+                    sfChartCandleViewModel.chartSeriesControllerHilo =
+                        controller;
                   },
                 ),
-              if (typeGraphic.value == TypesGraphic.line)
+              if (sfChartCandleViewModel.typeGraphic.value == TypesGraphic.line)
                 LineSeries<ChartSampleDate, DateTime>(
                   isVisibleInLegend: false,
                   enableTooltip: true,
                   //isVisible: typeGraphic.value == TypesGraphic.line,
                   animationDuration: 2000,
                   animationDelay: 1000,
-                  dataSource: _listDate,
+                  dataSource: listDate,
                   xValueMapper: (ChartSampleDate sales, _) => sales.dateTime,
                   yValueMapper: (ChartSampleDate sales, _) => sales.close,
                   onRendererCreated: (ChartSeriesController controller) {
-                    _chartSeriesControllerLine = controller;
+                    sfChartCandleViewModel.chartSeriesControllerLine =
+                        controller;
                   },
                 ),
 
@@ -308,7 +224,27 @@ class _SFChartCandleState extends State<SFChartCandle> {
                 numberFormat: NumberFormat.simpleCurrency(
                     locale: 'pt', decimalDigits: 2)),
             //isTransposed: true,
-          ),
+          );
+      },
+    );
+  }
+
+  final double height = 108;
+
+  Widget stateManagement(
+    StatusGetStocks state,
+    Function() onPressedBtnError,
+  ) {
+    switch (state) {
+      case StatusGetStocks.loading:
+        return loading();
+
+      case StatusGetStocks.start:
+        return start();
+      case StatusGetStocks.success:
+        return Container(
+          //padding: const EdgeInsets.all(4.0),
+          child: plotChart(),
         );
 
       case StatusGetStocks.error:
@@ -321,10 +257,12 @@ class _SFChartCandleState extends State<SFChartCandle> {
   void onSelected(int index, ValidRangesEnum validRangeFun) {
     setState(() {
       indexChipSelect = index;
-      validRange.value = validRangeFun;
+      sfChartCandleViewModel.validRange.value = validRangeFun;
     });
-    controller.getStockInfoAllRange(
-        symbol: widget.stock.stock, range: validRange.value);
+
+    sfChartCandleViewModel.controller.getStockInfoAllRange(
+        symbol: widget.stock.stock,
+        range: sfChartCandleViewModel.validRange.value);
   }
 
   @override
@@ -339,7 +277,7 @@ class _SFChartCandleState extends State<SFChartCandle> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             DropdownButtonGraphicTypes(
-              setTypeGraphic: setTypeGraphic,
+              setTypeGraphic: sfChartCandleViewModel.setTypeGraphic,
             ),
             IconButton(
               onPressed: widget.fullScreenGraphic,
@@ -356,7 +294,7 @@ class _SFChartCandleState extends State<SFChartCandle> {
                 duration: const Duration(seconds: 1),
                 child: stateManagement(
                   controller.stateInfoAllRange.value,
-                  _getStockInfoAllRange,
+                  sfChartCandleViewModel.getStockInfoAllRange,
                 ),
               );
             },

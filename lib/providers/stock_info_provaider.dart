@@ -9,9 +9,19 @@ import '../repository/stocks_repository.dart';
 import '../util/enums.dart';
 
 class StockInfoProvider with ChangeNotifier {
-  final IStockInfo _repository = StocksRepository(StocksHttpService());
+  late final IStockInfo _repository;
+  StockInfoProvider({required repository}) {
+    _repository = repository;
+  }
 
 
+
+
+
+
+
+
+  
 
   ValueNotifier<StatusGetStocks> stateInfoAllRange =
       ValueNotifier<StatusGetStocks>(StatusGetStocks.start);

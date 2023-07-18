@@ -1,31 +1,84 @@
 import 'package:b3_price_stocks/extensions/stocks_extensions.dart';
-import 'package:b3_price_stocks/model/stock_info_model.dart';
 import 'package:b3_price_stocks/services/stocks_http_service.dart';
 import 'package:flutter/material.dart';
 
 import '../interfaces/stocks_interface.dart';
 import '../model/stock.dart';
-import '../interfaces/stocks_info_interface.dart';
 import '../repository/stocks_repository.dart';
 import '../util/enums.dart';
 
 class StocksProvider with ChangeNotifier {
-  final IStocks _repository = StocksRepository(StocksHttpService());
-  List<Stock> _stoks = <Stock>[];
-  //var listaFinal = <StockInfoModel>{};
-  //List<String> listaStockName = [];
+  late final IStocks _repository;
 
+  StocksProvider({required repository}) {
+    _repository = repository;
+  }
+ 
+  final ValueNotifier<List<Stock>> listStocks = ValueNotifier(<Stock>[]);
+  final ValueNotifier<List<String>> stockSymbolList = ValueNotifier(<String>[]);
+  ValueNotifier<bool> isLoading = ValueNotifier(true);
+
+  final ValueNotifier stocksSortBy =
+      ValueNotifier<StocksSortBy>(StocksSortBy.volume);
+
+  final ValueNotifier stocksSectors = ValueNotifier<sectors>(sectors.All);
+
+  
+
+
+
+  searchStockFilter(String value) {
+    listStocks.value =
+        _searchStockFilter(value, stocksSectors.value);
+
+    listStocks.value.sortOrderStocks(stocksSortBy.value);
+    notifyListeners();
+  }
+
+  filterList() {
+    listStocks.value = _filterListStocks(stocksSectors.value);
+    listStocks.value.sortOrderStocks(stocksSortBy.value);
+    notifyListeners();
+  }
+
+  sortedList() {
+    listStocks.value.sortOrderStocks(stocksSortBy.value);
+    notifyListeners();
+  }
+
+  void onActionDropdownMenuItemSorted(StocksSortBy stocksSortBy) {
+    this.stocksSortBy.value = stocksSortBy;
+    sortedList();
+  }
+
+  void onActionDropdownMenuItemSectors(sectors sector) {
+    stocksSectors.value = sector;
+
+    filterList();
+  }
+
+  List<Stock> _stoks = <Stock>[];
   ValueNotifier<StatusGetStocks> stateUpdateStocks =
       ValueNotifier<StatusGetStocks>(StatusGetStocks.start);
 
-  // ValueNotifier<StatusGetStocks> stateInfoAllRange =
-  //     ValueNotifier<StatusGetStocks>(StatusGetStocks.start);
+  Future<void> loadStocks() async {
 
-  List<Stock> getAllStocks() {
+  try {
+    isLoading.value = true;
+    listStocks.value = await _updateStocks();
+    isLoading.value = false;
+  } catch (e) {
+    isLoading.value = false;
+    // trate o erro adequadamente aqui
+  }
+  notifyListeners();
+  }
+
+  List<Stock> _getAllStocks() {
     return [..._stoks];
   }
 
-  Future<List<Stock>> updateStocks() async {
+  Future<List<Stock>> _updateStocks() async {
     stateUpdateStocks.value = StatusGetStocks.loading;
 
     try {
@@ -33,10 +86,10 @@ class StocksProvider with ChangeNotifier {
       _stoks = listaStocks.stocks ?? _stoks;
       //listaStockName = _stoks.stockSymbolList();
     } catch (e) {
-      stateUpdateStocks.value  = StatusGetStocks.error;
+      stateUpdateStocks.value = StatusGetStocks.error;
     }
 
-    stateUpdateStocks.value  = StatusGetStocks.success;
+    stateUpdateStocks.value = StatusGetStocks.success;
 
     return _stoks;
   }
@@ -55,7 +108,7 @@ class StocksProvider with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  List<Stock> filterListStocks(sectors sector) {
+  List<Stock> _filterListStocks(sectors sector) {
     return [..._stoks].where((element) {
       if (sector != sectors.All) {
         var sectorAtual = element.sector;
@@ -70,8 +123,8 @@ class StocksProvider with ChangeNotifier {
     }).toList();
   }
 
-  List<Stock> searchStockFilter(String value, [sectors sector = sectors.All]) {
-    return filterListStocks(sector).where((element) {
+  List<Stock> _searchStockFilter(String value, [sectors sector = sectors.All]) {
+    return _filterListStocks(sector).where((element) {
       return element.stock.contains(value.toUpperCase());
     }).toList();
   }
