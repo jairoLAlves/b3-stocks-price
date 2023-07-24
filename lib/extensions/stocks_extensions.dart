@@ -1,9 +1,5 @@
 import 'package:b3_price_stocks/model/historical_data_price.dart';
 import 'package:b3_price_stocks/model/stock.dart';
-import 'package:b3_price_stocks/providers/stocks_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
 import '../util/enums.dart';
 import 'package:collection/collection.dart';
 
