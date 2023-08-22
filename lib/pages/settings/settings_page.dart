@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../components/navigation_drawer_principal.dart';
+import '../../components/menu/navigation_drawer_principal.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});

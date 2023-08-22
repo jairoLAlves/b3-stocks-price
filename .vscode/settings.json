@@ -2,4 +2,16 @@
     
     "androidEmulatorLauncher.emulatorPath": "/home/th4mz0/Android/Sdk/emulator/",
     "androidEmulatorLauncher.adbPath": "/home/th4mz0/Android/Sdk/platform-tools/",
+    "cSpell.language": "en,pt,pt-BR,en-US",
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true
+    },
+    "cSpell.words": [
+        "cupertino",
+        "fullscreen",
+        "grey",
+        "logourl",
+        "provaider",
+        "syncfusion"
+    ]
 }

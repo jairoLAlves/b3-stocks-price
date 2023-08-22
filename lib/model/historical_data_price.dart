@@ -1,14 +1,24 @@
-import '../util/enums.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'chart_sample_date.dart';
+import 'historical_data_and_chart_semple_date.dart';
 
-class HistoricalDataPrice {
+class HistoricalDataPrice extends HistoricalDataAndChartSampleDate {
   num? date;
-  num? open;
-  num? high;
-  num? low;
-  num? close;
-  num? volume;
 
+  @override
+  num? open;
+
+  @override
+  num? high;
+
+  @override
+  num? low;
+
+  @override
+  num? close;
+
+  @override
+  num? volume;
 
   HistoricalDataPrice({
     this.date,
@@ -55,13 +65,6 @@ class HistoricalDataPrice {
 
   @override
   String toString() {
-    return '''
-    date: $date
-    open: $open
-    high: $high
-    low: $low
-    close: $close
-    volume: $volume
-''';
+    return 'HistoricalDataPrice(date: $date, open: $open, high: $high, low: $low, close: $close, volume: $volume)';
   }
 }

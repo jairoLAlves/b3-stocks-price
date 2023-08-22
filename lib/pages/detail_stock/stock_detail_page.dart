@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../components/graphics/graphic_line_stock.dart';
 import 'components/pane_item_info.dart';
 import '../../model/stock.dart';
 import '../../model/stock_info_model.dart';
 import '../../providers/stock_info_provaider.dart';
-import '../../util/enums.dart';
 import 'package:provider/provider.dart';
 
 //how to get the stock data of Tesla in dadrt?
@@ -22,9 +20,8 @@ class StockDetailPage extends StatefulWidget {
 class _StockDetailState extends State<StockDetailPage>
     with TickerProviderStateMixin {
   late StockInfoProvider controller;
-  final ValueNotifier<StockInfoModel> stockInfo =
-      ValueNotifier(StockInfoModel());
-  late ValidRangesEnum validRange = ValidRangesEnum.five_d;
+  final ValueNotifier<StockInfoModel?> stockInfo = ValueNotifier(null);
+
   late final ValueNotifier<Stock> stock = ValueNotifier(Stock());
   late TabController _tabController;
 
@@ -39,20 +36,19 @@ class _StockDetailState extends State<StockDetailPage>
     _tabController = TabController(length: 3, vsync: this);
   }
 
-  void _getStockInfoAllRange() {
-    controller.getStockInfoAllRange(
+  void _getStockInfoAllRange() async {
+    final (stockInfo: info, listHistoricalDataPrice: _, status: _) =
+        await controller.getHistoricalDataPrice(
       symbol: stock.value.stock,
-      range: validRange,
     );
+
+    stockInfo.value = info;
   }
 
   @override
   Widget build(BuildContext context) {
-    controller = context.watch<StockInfoProvider>();
     stock.value = (ModalRoute.of(context)?.settings.arguments as Stock);
-
-    stockInfo.value = controller.getStockInfo(stock.value.stock);
-    String titleLong = (stockInfo.value.longName ?? stock.value.name) ?? "";
+    String titleLong = (stockInfo.value?.longName ?? stock.value.name);
 
     return SafeArea(
       child: Scaffold(
@@ -89,12 +85,13 @@ class _StockDetailState extends State<StockDetailPage>
                                       maxHeight: 300, maxWidth: 700),
                                   child: const Card(),
                                 ),
-                                PanelItemInfo(stockInfoModel: value),
+                                if (value != null)
+                                  PanelItemInfo(stockInfoModel: value),
                               ],
                             );
                           }),
                     ),
-                    Stack(children: const [Text("Gráfico")]),
+                    const Stack(children: [Text("Gráfico")]),
                     const Center(
                       child: Text("Estatísticas"),
                     )

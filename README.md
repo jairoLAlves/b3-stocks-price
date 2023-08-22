@@ -2,6 +2,14 @@
 
 ### **b3_price_stocks** é um aplicativo desenvolvido em Flutter que fornece informações sobre o preço das ações negociadas na B3 ( bolsa de valores brasileira).
 
+## Capturas de Tela:
+<div style="">
+<img src="https://api.onedrive.com/v1.0/drives/882515551C0A8F74/items/882515551C0A8F74!2877/thumbnails/0/c400x734/content/b3c1.c400x734.PNG?prefer=noredirect&cb=2023-08-22T19%3A53%3A07.66Z" alt="Lista Das Ações" style="height: 400px; width:200;"/>
+<img src="https://api.onedrive.com/v1.0/drives/882515551C0A8F74/items/882515551C0A8F74!2878/thumbnails/0/c402x734/content/b3c2.c402x734.PNG?prefer=noredirect&cb=2023-08-22T19%3A53%3A22.823Z" alt="Gráfico" style="height: 400px; width:200px;"/>
+<img src="https://api.onedrive.com/v1.0/drives/882515551C0A8F74/items/882515551C0A8F74!2876/thumbnails/0/c403x734/content/b3c3.c403x734.PNG?prefer=noredirect&cb=2023-08-22T19%3A53%3A40.71Z" alt="Gráfico Expandido" style="height: 400px; width:200px;"/>
+<img src="https://api.onedrive.com/v1.0/drives/882515551C0A8F74/items/882515551C0A8F74!2875/thumbnails/0/c402x734/content/b3c4.c402x734.PNG?prefer=noredirect&cb=2023-08-22T19%3A53%3A55.303Z" alt="Resumo" style="height: 400px; width:200px;"/>
+</div>
+
 ## Funcionalidades
 
 - [x] Visualização de gráficos dos preços das ações;
@@ -14,31 +22,12 @@
 O aplicativo utiliza as seguintes dependências:
 
 - http
-- device_preview
-- candlesticks_plus
 - provider
 - flutter_svg
-- chart_sparkline
 - intl
 - syncfusion_flutter_charts
-- cupertino_icons
-- flutter_animate
 - shared_preferences
 
 ## Status do Projeto
 
 ![Badge em Desenvolvimento](https://img.shields.io/static/v1?label=STATUS&message=O%20projeto%20ainda%20est%C3%A1%20em%20desenvolvimento.&color=black&style=for-the-badge)
-
-## Como contribuir
-
-Contribuições são sempre bem-vindas! Para contribuir com o projeto, siga os seguintes passos:
-
-1. Faça um fork deste repositório;
-2. Crie uma branch para a sua feature (`git checkout -b feature/nome-da-feature`);
-3. Faça suas alterações e faça commit das mesmas (`git commit -am 'Adiciona nova feature'`);
-4. Faça push para o branch (`git push origin feature/nome-da-feature`);
-5. Abra um pull request para este repositório.
-
-## Autor
-
-Este aplicativo foi desenvolvido por [Jairo laranjeira Alves](https://github.com/jairoLAlves).

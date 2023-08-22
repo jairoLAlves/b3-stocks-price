@@ -1,47 +1,142 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first, avoid_init_to_null
+// ignore_for_file: public_member_api_docs, sort_constructors_first, avoid_init_to_null, no_leading_underscores_for_local_identifiers, sized_box_for_whitespace
 // ignore: avoid_init_to_null for this file
+import 'dart:async';
+
+import 'package:b3_price_stocks/components/widgets/error_graphic.dart';
+import 'package:b3_price_stocks/components/widgets/loading.dart';
+import 'package:b3_price_stocks/components/widgets/start.dart';
+import 'package:b3_price_stocks/extensions/stocks_extensions.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../model/chart_sample_date.dart';
-import '../../model/stock.dart';
+import '../../pages/search_stocks/controller/item_list_stock_controller.dart';
 import '../../providers/stock_info_provaider.dart';
 import '../../util/enums.dart';
-import '../widgets/error_graphic.dart';
-import '../widgets/loading.dart';
-import '../widgets/start.dart';
+import 'controller/historical_price_controller.dart';
+import 'controller/sf_graphic_controller.dart';
 import 'dropdown_button_graphic_types.dart';
-import 'historical_price_choicechip.dart';
-import 'mvvm/sf_chart_candle_view_model.dart';
+import 'historical_price_ChoiceChip.dart';
 
 class SFChartCandle extends StatefulWidget {
-  final Stock stock;
-  final bool isExpandedGraphic;
-  final void Function() fullScreenGraphic;
-
-  const SFChartCandle({
-    Key? key,
-    required this.stock,
-    required this.isExpandedGraphic,
-    required this.fullScreenGraphic,
-  }) : super(key: key);
+  final ItemListStockController stockController;
+  const SFChartCandle(this.stockController, {super.key});
 
   @override
   State<SFChartCandle> createState() => _SFChartCandleState();
 }
 
 class _SFChartCandleState extends State<SFChartCandle> {
-  late final SfChartCandleViewModel sfChartCandleViewModel;
+  // Controllers
+  late StockInfoProvider controller;
+
+  late SfGraphicController sfGraphicController;
+
+  late HistoricalPriceController priceController;
+
+  ///--------------------
+  ///
+
+  void updateGraphic() async {
+    sfGraphicController.status.value = StatusGetStocks.loading;
+    final (:stockInfo, :listHistoricalDataPrice, :status) =
+        await controller.getHistoricalDataPrice(
+      interval: sfGraphicController.validInterval.value,
+      range: sfGraphicController.validRange.value,
+      symbol: widget.stockController.stock.stock,
+    );
+
+    sfGraphicController.stockInfo.value = stockInfo;
+    sfGraphicController.status.value = status;
+
+    /*  sfGraphicController.typeGraphic.addListener(() {
+      setState(() {});
+    }); */
+
+    sfGraphicController.listDateCandle.value = listHistoricalDataPrice
+        .map<ChartSampleDate>((date) => date.toChartSampleDate)
+        .toList();
+
+    final (:min, :max, :media) =
+        sfGraphicController.listDateCandle.value.getMinMaxMedia();
+
+    sfGraphicController.min.value = min;
+    sfGraphicController.max.value = max;
+    sfGraphicController.media.value = media;
+  }
 
   @override
   void initState() {
     super.initState();
-    sfChartCandleViewModel = SfChartCandleViewModel(
-      stock: widget.stock,
-      context: context,
-    );
+
+    controller = context.read<StockInfoProvider>();
+
+    sfGraphicController = SfGraphicController();
+
+    priceController = HistoricalPriceController();
+
+    sfGraphicController.dropdownValue.value = sfGraphicController
+        .getDropdownMenuItemChart(sfGraphicController.typeGraphic.value);
+
+    updateGraphic();
+
+    priceController.indexChipSelect.addListener(() {
+      sfGraphicController.validRange.value =
+          priceController.getChoiceChipRangeDate().validRange;
+
+      updateGraphic();
+    });
+
+    sfGraphicController.isFullScreenGraphic.addListener(() async {
+      if (sfGraphicController.isFullScreenGraphic.value) {
+        await Future(() => showCupertinoModalPopup(
+              // barrierDismissible: true,
+
+              context: context,
+              builder: (context) => pageGraphic(context),
+            ));
+      } else {
+        if (Navigator.canPop(context)) {
+          Navigator.of(context).pop();
+        }
+      }
+    });
+
+    Future(() {
+      sfGraphicController.tooltipBehavior = TooltipBehavior(
+        enable: true,
+      );
+      sfGraphicController.zoomPanBehavior = ZoomPanBehavior(
+        // Enables pinch zooming
+        enablePinching: true,
+
+        // Performs zooming on double tap
+        enableDoubleTapZooming: true,
+        enableSelectionZooming: true,
+        selectionRectBorderColor: Colors.black,
+        selectionRectBorderWidth: 1,
+        selectionRectColor: Colors.grey,
+        enableMouseWheelZooming: true,
+        enablePanning: true,
+      );
+      sfGraphicController.trackballBehavior = TrackballBehavior(
+        tooltipDisplayMode: TrackballDisplayMode.floatAllPoints,
+        enable: true,
+        tooltipSettings: const InteractiveTooltip(
+          enable: true,
+        ),
+        markerSettings: const TrackballMarkerSettings(
+            markerVisibility: TrackballVisibilityMode.visible),
+      );
+      sfGraphicController.selectionBehavior = SelectionBehavior(
+        enable: true,
+        selectedColor: Colors.red,
+        unselectedColor: Colors.grey,
+      );
+    });
   }
 
   @override
@@ -49,266 +144,208 @@ class _SFChartCandleState extends State<SFChartCandle> {
     super.dispose();
   }
 
-  Widget plotChart() {
-    return ValueListenableBuilder<List<ChartSampleDate>>(
-      valueListenable: sfChartCandleViewModel.listDate,
-      builder: (
-        context,
-        listDate,
-        child,
-      ) {
-        return  SfCartesianChart(
-            enableAxisAnimation: true,
-            tooltipBehavior: sfChartCandleViewModel.tooltipBehavior,
-            annotations: <CartesianChartAnnotation>[
-              CartesianChartAnnotation(
-                widget: Opacity(
-                    opacity: 0.2,
-                    child: Text(
-                      widget.stock.stock,
-                      style: const TextStyle(fontSize: 40),
-                    )),
-                region: AnnotationRegion.chart,
-                coordinateUnit: CoordinateUnit.percentage,
-                x: '50%',
-                y: '50%',
-              )
-            ],
-
-            plotAreaBorderColor: Theme.of(context).colorScheme.onBackground,
-            zoomPanBehavior: sfChartCandleViewModel.zoomPanBehavior,
-            trackballBehavior: sfChartCandleViewModel.trackballBehavior,
-            legend: Legend(
-              isVisible: false,
-              position: LegendPosition.bottom,
-            ),
-            // indicators: <TechnicalIndicators<ChartSampleDate, DateTime>>[
-            //   SmaIndicator<ChartSampleDate, DateTime>(
-            //     isVisibleInLegend: true,
-            //     signalLineColor: Colors.cyan,
-            //     seriesName: 'SMA-9',
-            //     period: 9,
-            //     valueField: 'close',
-            //     animationDuration: 2000,
-            //     animationDelay: 1000,
-            //     dataSource: _listDate,
-            //     xValueMapper: (ChartSampleDate sales, _) => sales.dateTime,
-            //     lowValueMapper: (ChartSampleDate sales, _) => sales.low,
-            //     highValueMapper: (ChartSampleDate sales, _) => sales.high,
-            //     openValueMapper: (ChartSampleDate sales, _) => sales.open,
-            //     closeValueMapper: (ChartSampleDate sales, _) => sales.close,
-            //   ),
-            //   SmaIndicator<ChartSampleDate, DateTime>(
-            //     isVisibleInLegend: true,
-            //     signalLineColor: Colors.amber,
-            //     seriesName: 'SMA-21',
-            //     period: 21,
-            //     valueField: 'close',
-            //     animationDuration: 2000,
-            //     animationDelay: 1000,
-            //     dataSource: _listDate,
-            //     xValueMapper: (ChartSampleDate sales, _) => sales.dateTime,
-            //     lowValueMapper: (ChartSampleDate sales, _) => sales.low,
-            //     highValueMapper: (ChartSampleDate sales, _) => sales.high,
-            //     openValueMapper: (ChartSampleDate sales, _) => sales.open,
-            //     closeValueMapper: (ChartSampleDate sales, _) => sales.close,
-            //   ),
-            //   SmaIndicator<ChartSampleDate, DateTime>(
-            //     isVisibleInLegend: true,
-            //     signalLineColor: Colors.redAccent,
-            //     seriesName: 'SMA-50',
-            //     period: 50,
-            //     valueField: 'close',
-            //     animationDuration: 2000,
-            //     animationDelay: 1000,
-            //     dataSource: _listDate,
-            //     xValueMapper: (ChartSampleDate sales, _) => sales.dateTime,
-            //     lowValueMapper: (ChartSampleDate sales, _) => sales.low,
-            //     highValueMapper: (ChartSampleDate sales, _) => sales.high,
-            //     openValueMapper: (ChartSampleDate sales, _) => sales.open,
-            //     closeValueMapper: (ChartSampleDate sales, _) => sales.close,
-            //   )
-            // ],
-
-            series: <CartesianSeries>[
-              if (sfChartCandleViewModel.typeGraphic.value ==
-                  TypesGraphic.candle)
-                CandleSeries<ChartSampleDate, DateTime>(
-                  isVisibleInLegend: false,
-                  bearColor: Colors.green,
-                  bullColor: Colors.red,
-                  enableTooltip: true,
-                  enableSolidCandles: true,
-                  //isVisible: typeGraphic.value == TypesGraphic.candle,
-                  animationDuration: 2000,
-                  animationDelay: 1000,
-                  dataSource: listDate,
-                  xValueMapper: (ChartSampleDate sales, _) => sales.dateTime,
-                  lowValueMapper: (ChartSampleDate sales, _) => sales.low,
-                  highValueMapper: (ChartSampleDate sales, _) => sales.high,
-                  openValueMapper: (ChartSampleDate sales, _) => sales.open,
-                  closeValueMapper: (ChartSampleDate sales, _) => sales.close,
-                  onRendererCreated: (ChartSeriesController controller) {
-                    sfChartCandleViewModel.chartSeriesControllerCandle =
-                        controller;
-                  },
-                ),
-              if (sfChartCandleViewModel.typeGraphic.value ==
-                  TypesGraphic.hiloOpenClose)
-                HiloOpenCloseSeries<ChartSampleDate, DateTime>(
-                  isVisibleInLegend: false,
-                  enableTooltip: true,
-                  //isVisible: typeGraphic.value == TypesGraphic.hiloOpenClose,
-                  animationDuration: 2000,
-                  animationDelay: 1000,
-                  dataSource: listDate,
-                  xValueMapper: (ChartSampleDate sales, _) => sales.dateTime,
-                  lowValueMapper: (ChartSampleDate sales, _) => sales.low,
-                  highValueMapper: (ChartSampleDate sales, _) => sales.high,
-                  openValueMapper: (ChartSampleDate sales, _) => sales.open,
-                  closeValueMapper: (ChartSampleDate sales, _) => sales.close,
-                  onRendererCreated: (ChartSeriesController controller) {
-                    sfChartCandleViewModel.chartSeriesControllerHilo =
-                        controller;
-                  },
-                ),
-              if (sfChartCandleViewModel.typeGraphic.value == TypesGraphic.line)
-                LineSeries<ChartSampleDate, DateTime>(
-                  isVisibleInLegend: false,
-                  enableTooltip: true,
-                  //isVisible: typeGraphic.value == TypesGraphic.line,
-                  animationDuration: 2000,
-                  animationDelay: 1000,
-                  dataSource: listDate,
-                  xValueMapper: (ChartSampleDate sales, _) => sales.dateTime,
-                  yValueMapper: (ChartSampleDate sales, _) => sales.close,
-                  onRendererCreated: (ChartSeriesController controller) {
-                    sfChartCandleViewModel.chartSeriesControllerLine =
-                        controller;
-                  },
-                ),
-
-              // LineSeries<ChartSampleDate, DateTime>(
-              //   dataSource: _listDate,
-              //   xValueMapper: (ChartSampleDate sales, _) => sales.dateTime,
-              //   yValueMapper: (ChartSampleDate sales, _) => sales.close,
-              // ),
-            ],
-            primaryXAxis: DateTimeAxis(
-              labelAlignment: LabelAlignment.center,
-              plotOffset: 20,
-              majorGridLines: const MajorGridLines(
-                width: 0,
-                color: Colors.transparent,
-              ),
-              minorGridLines: const MinorGridLines(
-                width: 0,
-                color: Colors.transparent,
-              ),
-
-              // dateFormat: ,
-            ),
-            primaryYAxis: NumericAxis(
-                labelAlignment: LabelAlignment.center,
-                opposedPosition: true,
-                majorGridLines: const MajorGridLines(
-                  width: 0,
-                  color: Colors.transparent,
-                ),
-                minorGridLines: const MinorGridLines(
-                  width: 0,
-                  color: Colors.transparent,
-                ),
-
-                // minimum: 0.01,
-                numberFormat: NumberFormat.simpleCurrency(
-                    locale: 'pt', decimalDigits: 2)),
-            //isTransposed: true,
-          );
-      },
-    );
-  }
-
   final double height = 108;
 
-  Widget stateManagement(
-    StatusGetStocks state,
-    Function() onPressedBtnError,
-  ) {
-    switch (state) {
-      case StatusGetStocks.loading:
-        return loading();
+  Widget stateManagement() {
+    return ValueListenableBuilder(
+        valueListenable: sfGraphicController.status,
+        builder: (context, status, child) => switch (status) {
+              StatusGetStocks.error => errorGraphic(() => updateGraphic()),
+              StatusGetStocks.start => start(),
+              StatusGetStocks.loading => loading(),
+              StatusGetStocks.success => ValueListenableBuilder(
+                  valueListenable: sfGraphicController.listDateCandle,
+                  builder: (context, data, child) => SfCartesianChart(
+                    enableAxisAnimation: true,
+                    tooltipBehavior: sfGraphicController.tooltipBehavior,
+                    annotations: <CartesianChartAnnotation>[
+                      CartesianChartAnnotation(
+                        widget: Opacity(
+                            opacity: 0.5,
+                            child: Text(
+                              widget.stockController.stock.stock,
+                              style: const TextStyle(fontSize: 20),
+                            )),
+                        region: AnnotationRegion.chart,
+                        coordinateUnit: CoordinateUnit.percentage,
+                        x: '50%',
+                        y: '50%',
+                      )
+                    ],
 
-      case StatusGetStocks.start:
-        return start();
-      case StatusGetStocks.success:
-        return Container(
-          //padding: const EdgeInsets.all(4.0),
-          child: plotChart(),
-        );
+                    plotAreaBorderColor:
+                        Theme.of(context).colorScheme.onBackground,
+                    //zoomPanBehavior: sfGraphicController.zoomPanBehavior,
+                    // trackballBehavior: sfGraphicController.trackballBehavior,
+                    legend: Legend(
+                      isVisible: false,
+                      position: LegendPosition.bottom,
+                    ),
 
-      case StatusGetStocks.error:
-        return errorGraphic(onPressedBtnError);
-    }
-  }
+                    series: <CartesianSeries>[
+                      switch (sfGraphicController.typeGraphic.value) {
+                        TypesGraphic.candle =>
+                          CandleSeries<ChartSampleDate, DateTime>(
+                            isVisibleInLegend: false,
+                            bearColor: Colors.green,
+                            bullColor: Colors.red,
+                            enableTooltip: true,
+                            enableSolidCandles: true,
+                            //isVisible: typeGraphic.value == TypesGraphic.candle,
+                            animationDuration: 2000,
+                            animationDelay: 1000,
+                            dataSource: data,
+                            xValueMapper: (ChartSampleDate sales, _) =>
+                                sales.dateTime,
+                            lowValueMapper: (ChartSampleDate sales, _) =>
+                                sales.low,
+                            highValueMapper: (ChartSampleDate sales, _) =>
+                                sales.high,
+                            openValueMapper: (ChartSampleDate sales, _) =>
+                                sales.open,
+                            closeValueMapper: (ChartSampleDate sales, _) =>
+                                sales.close,
+                            onRendererCreated:
+                                (ChartSeriesController controller) {
+                              sfGraphicController.chartSeriesControllerCandle =
+                                  controller;
+                            },
+                          ),
+                        TypesGraphic.hiloOpenClose =>
+                          HiloOpenCloseSeries<ChartSampleDate, DateTime>(
+                            isVisibleInLegend: false,
+                            enableTooltip: true,
+                            //isVisible: typeGraphic.value == TypesGraphic.hiloOpenClose,
+                            animationDuration: 2000,
+                            animationDelay: 1000,
+                            dataSource: data,
+                            xValueMapper: (ChartSampleDate sales, _) =>
+                                sales.dateTime,
+                            lowValueMapper: (ChartSampleDate sales, _) =>
+                                sales.low,
+                            highValueMapper: (ChartSampleDate sales, _) =>
+                                sales.high,
+                            openValueMapper: (ChartSampleDate sales, _) =>
+                                sales.open,
+                            closeValueMapper: (ChartSampleDate sales, _) =>
+                                sales.close,
+                            onRendererCreated:
+                                (ChartSeriesController controller) {
+                              sfGraphicController.chartSeriesControllerHilo =
+                                  controller;
+                            },
+                          ),
+                        TypesGraphic.line =>
+                          LineSeries<ChartSampleDate, DateTime>(
+                            isVisibleInLegend: false,
+                            enableTooltip: true,
+                            //isVisible: typeGraphic.value == TypesGraphic.line,
+                            animationDuration: 2000,
+                            animationDelay: 1000,
+                            dataSource: data,
+                            xValueMapper: (ChartSampleDate sales, _) =>
+                                sales.dateTime,
+                            yValueMapper: (ChartSampleDate sales, _) =>
+                                sales.close,
+                            onRendererCreated:
+                                (ChartSeriesController controller) {
+                              sfGraphicController.chartSeriesControllerLine =
+                                  controller;
+                            },
+                          ),
+                      }
+                    ],
+                    primaryXAxis: DateTimeAxis(
+                      // intervalType: DateTimeIntervalType.days,
+                      labelAlignment: LabelAlignment.center,
+                      plotOffset: 20,
+                      majorGridLines: const MajorGridLines(
+                        width: 0,
+                        color: Colors.transparent,
+                      ),
+                      minorGridLines: const MinorGridLines(
+                        width: 0,
+                        color: Colors.transparent,
+                      ),
 
-  int indexChipSelect = 0;
+                      // dateFormat: ,
+                    ),
+                    primaryYAxis: NumericAxis(
+                      // isVisible: false,
+                      maximum: sfGraphicController.min.value,
+                      minimum: sfGraphicController.max.value,
 
-  void onSelected(int index, ValidRangesEnum validRangeFun) {
-    setState(() {
-      indexChipSelect = index;
-      sfChartCandleViewModel.validRange.value = validRangeFun;
-    });
+                      decimalPlaces: 2,
+                      labelAlignment: LabelAlignment.center,
+                      opposedPosition: true,
+                      majorGridLines: const MajorGridLines(
+                        width: 0,
+                        color: Colors.transparent,
+                      ),
+                      minorGridLines: const MinorGridLines(
+                        width: 0,
+                        color: Colors.transparent,
+                      ),
 
-    sfChartCandleViewModel.controller.getStockInfoAllRange(
-        symbol: widget.stock.stock,
-        range: sfChartCandleViewModel.validRange.value);
+                      // minimum: 0.01,
+                      numberFormat: NumberFormat.simpleCurrency(
+                        locale: 'pt',
+                        decimalDigits: 2,
+                      ),
+                    ),
+                    //isTransposed: true,
+                  ),
+                )
+            });
   }
 
   @override
   Widget build(BuildContext context) {
-    var controller = context.watch<StockInfoProvider>();
+    debugPrint("_SFChartCandleState");
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
+    return pageGraphic(context);
+  }
+
+  Scaffold pageGraphic(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             DropdownButtonGraphicTypes(
-              setTypeGraphic: sfChartCandleViewModel.setTypeGraphic,
+              sfGraphicController: sfGraphicController,
             ),
-            IconButton(
-              onPressed: widget.fullScreenGraphic,
-              icon: Icon(widget.isExpandedGraphic
-                  ? Icons.fullscreen_exit
-                  : Icons.fullscreen),
+            ValueListenableBuilder(
+              valueListenable: sfGraphicController.isFullScreenGraphic,
+              builder: (context, value, child) => IconButton(
+                onPressed: () async {
+                  sfGraphicController.setFullScreenGraphic();
+                },
+                icon: Icon(value ? Icons.fullscreen_exit : Icons.fullscreen),
+              ),
             )
           ],
         ),
-        Expanded(
-          child: Consumer<StockInfoProvider>(
-            builder: (context, controller, child) {
-              return AnimatedSwitcher(
-                duration: const Duration(seconds: 1),
-                child: stateManagement(
-                  controller.stateInfoAllRange.value,
-                  sfChartCandleViewModel.getStockInfoAllRange,
-                ),
-              );
-            },
-          ),
+      ),
+      body: SafeArea(
+        child: showWidgetGraphic(),
+      ),
+      bottomNavigationBar: Container(
+        alignment: Alignment.bottomCenter,
+        height: 30,
+        //color: Colors.black.withAlpha(40),
+        child: HistoricalPriceChoiceChipRangeDate(
+          priceController: priceController,
         ),
-        SizedBox(
-          height: 30,
-          //color: Colors.black.withAlpha(40),
-          child: HistoricalPriceChoicechipRangeDate(
-            indexChipSelect: indexChipSelect,
-            onSelected: onSelected,
-          ),
-        ),
-      ],
+      ),
+    );
+  }
+
+  Widget showWidgetGraphic() {
+    return AnimatedSwitcher(
+      duration: const Duration(seconds: 1),
+      child: stateManagement(),
     );
   }
 }

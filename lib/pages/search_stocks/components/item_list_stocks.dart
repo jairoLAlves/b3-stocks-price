@@ -1,52 +1,35 @@
-import 'package:b3_price_stocks/components/graphics/sf_chart_candle.dart';
-import 'package:b3_price_stocks/model/stock.dart';
-import 'package:b3_price_stocks/routes/routes_pages.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
+
+import 'package:b3_price_stocks/model/stock.dart';
+import 'package:b3_price_stocks/routes/routes_pages.dart';
+
+import '../../../components/graphics/sf_chart_candle.dart';
 import '../../../components/widgets/logo_stock_svg.dart';
+import '../controller/item_list_stock_controller.dart';
 
 class ItemListStocks extends StatefulWidget {
   final Stock stock;
-  const ItemListStocks({super.key, required this.stock});
+  const ItemListStocks({
+    Key? key,
+    required this.stock,
+  }) : super(key: key);
 
   @override
   State<ItemListStocks> createState() => _ItemListStocksState();
 }
 
 class _ItemListStocksState extends State<ItemListStocks> {
-  ValueNotifier<bool> isExpandedGraphic = ValueNotifier<bool>(false);
-  ValueNotifier<bool> isFullScreenGraphic = ValueNotifier<bool>(false);
-  ValueNotifier<double> heightGraphic = ValueNotifier<double>(0);
+  late ItemListStockController stockController;
 
-  void setFullScreenGraphic() {
-    setState(() {
-      isFullScreenGraphic.value = !isFullScreenGraphic.value;
-    });
-  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
 
-  void showFullGraphic() {
-    setFullScreenGraphic();
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Material(
-          child: showGraphicWidget(),
-        );
-      },
-    );
-  }
-
-  void showGraphic() {
-    setState(() {
-      isExpandedGraphic.value = !isExpandedGraphic.value;
-
-      if (isExpandedGraphic.value) {
-        heightGraphic.value = 146;
-      } else {
-        heightGraphic.value = 0;
-      }
-    });
+    stockController = ItemListStockController(widget.stock);
   }
 
   Widget headerItemListStocks({
@@ -64,17 +47,17 @@ class _ItemListStocksState extends State<ItemListStocks> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Card(
-                  shape: RoundedRectangleBorder(
+                  /*  shape: RoundedRectangleBorder(
                     side: BorderSide(
                         color: Theme.of(context).colorScheme.onBackground),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
+                    borderRadius: BorderRadius.circular(8),
+                  ), */
                   elevation: 5,
                   child: SizedBox(
                     height: 80,
                     width: 80,
                     child: ClipRRect(
-                      borderRadius: const BorderRadius.all(Radius.circular(15)),
+                      // borderRadius: const BorderRadius.all(Radius.circular(0)),
                       child: LogoStockSvg(stock.logo),
                     ),
                   ),
@@ -201,24 +184,9 @@ class _ItemListStocksState extends State<ItemListStocks> {
     );
   }
 
-  Widget showGraphicWidget() {
-    return isFullScreenGraphic.value
-        ? SFChartCandle(
-            stock: widget.stock,
-            isExpandedGraphic: isFullScreenGraphic.value,
-            fullScreenGraphic: () {
-              Navigator.of(context).pop();
-              setFullScreenGraphic();
-            })
-        : SFChartCandle(
-            stock: widget.stock,
-            isExpandedGraphic: isFullScreenGraphic.value,
-            fullScreenGraphic: () => showFullGraphic(),
-          );
-  }
-
   @override
   Widget build(BuildContext context) {
+    // debugPrint("ItemListStocks")
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
@@ -233,78 +201,79 @@ class _ItemListStocksState extends State<ItemListStocks> {
               //color: const Color(0x01000000),
               child: Container(
                 margin: const EdgeInsets.all(8),
-                child: Stack(
-                  children: [
-                    Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              Navigator.of(context).pushNamed(
-                                RoutesPages.STOCKDETAIL,
-                                arguments: widget.stock,
-                              );
-                            },
-                            child: headerItemListStocks(stock: widget.stock),
-                          ),
-
-                          // Gráfico card
-
-                          Container(
-                            constraints: const BoxConstraints(
-                              maxHeight: 300,
-                            ),
-                            child: ValueListenableBuilder(
-                                valueListenable: isExpandedGraphic,
-                                builder: (context, value, child) {
-                                  return Container(
-                                    height: 0,
-                                  )
-                                      .animate(
-                                    target: !value ? 0 : 1,
-                                  )
-                                      .swap(builder: (_, __) {
-                                    return Card(
-                                      elevation: 1,
-                                      child: showGraphicWidget(),
-                                    )
-                                        //
-
-                                        .animate()
-                                        .scaleY(
-                                          duration: 800.ms,
-                                          curve: Curves.linear,
-                                          begin: 0,
-                                          end: 1,
-                                        )
-                                        .desaturate(
-                                          begin: 0.0,
-                                          end: 1.0,
-                                          duration: 800.ms,
-                                        );
-                                  });
-                                }),
-                          )
-                        ],
+                child: Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          Navigator.of(context).pushNamed(
+                            RoutesPages.stockDetail,
+                            arguments: widget.stock,
+                          );
+                        },
+                        child: headerItemListStocks(stock: widget.stock),
                       ),
-                    ),
-                    Container(
-                      alignment: Alignment.topRight,
-                      child: AnimatedSwitcher(
-                          switchInCurve: Curves.linear,
-                          switchOutCurve: Curves.bounceIn,
-                          duration: 1000.ms,
-                          child: InkWell(
-                            onTap: showGraphic,
-                            child: isExpandedGraphic.value
-                                ? const Icon(Icons.insert_chart)
-                                : const Icon(Icons.show_chart),
-                          )),
-                    ),
-                  ],
+
+                      // Gráfico card
+
+                      Column(children: [
+                        Container(
+                          constraints: const BoxConstraints(
+                            maxHeight: 300,
+                          ),
+                          child: ValueListenableBuilder(
+                              valueListenable:
+                                  stockController.isExpandedGraphic,
+                              builder: (context, value, child) {
+                                return !value
+                                    ? Container(
+                                        height: 0,
+                                      )
+                                    : Card(
+                                        elevation: 1,
+                                        child: SFChartCandle(
+                                          stockController,
+                                          key: widget.key,
+                                        ),
+                                      );
+                              }),
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              borderRadius: BorderRadius.circular(25)),
+                          padding: const EdgeInsets.all(4),
+                          child: ValueListenableBuilder<bool>(
+                            valueListenable: stockController.isExpandedGraphic,
+                            builder: (context, value, child) =>
+                                AnimatedSwitcher(
+                                    switchInCurve: Curves.linear,
+                                    switchOutCurve: Curves.bounceIn,
+                                    duration: 1000.ms,
+                                    child: InkWell(
+                                      onTap: stockController.showGraphic,
+                                      child: value
+                                          ? Icon(
+                                              Icons.close_rounded,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .surface,
+                                            )
+                                          : Icon(
+                                              Icons.show_chart_outlined,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .surface,
+                                            ),
+                                    )),
+                          ),
+                        ),
+                      ])
+                    ],
+                  ),
                 ),
               )),
         ),
