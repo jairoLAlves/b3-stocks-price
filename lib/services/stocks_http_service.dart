@@ -9,14 +9,14 @@ import 'package:http/http.dart' as http;
 class StocksHttpService with IStockInfoService implements IStocksService {
   static const String _baseUrl = 'brapi.dev';
 
-   Map<String, String> headers = {
-      HttpHeaders.contentTypeHeader: 'application/json',
-    };
+  Map<String, String> headers = {
+    HttpHeaders.contentTypeHeader: 'application/json',
+  };
 
   @override
   Future<Map<String, dynamic>> getAllStocks() async {
     var url = Uri.https(_baseUrl, '/api/quote/list');
-    var response = await http.get(url, headers:headers);
+    var response = await http.get(url, headers: headers);
 
     var body =
         jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
@@ -33,8 +33,8 @@ class StocksHttpService with IStockInfoService implements IStocksService {
   @override
   Future<Map<String, dynamic>> getAllStocksInfo({
     required List<String> symbols,
-    ValidRangesEnum range = ValidRangesEnum.one_m,
-    ValidRangesEnum interval = ValidRangesEnum.one_d,
+    ValidRangesEnum range = ValidRangesEnum.one_mo,
+    ValidIntervalEnum interval = ValidIntervalEnum.one_d,
     bool fundamental = true,
     bool dividends = true,
   }) async {
@@ -47,31 +47,26 @@ class StocksHttpService with IStockInfoService implements IStocksService {
     }
 
     Map<String, String> queryParameters = {
-      "range": "${getValidRangeString(range)}",
-      "interval": "${getValidRangeString(interval)}",
+      "range": getValidRangeString(range),
+      "interval": getValidIntervalString(interval),
       "fundamental": "$fundamental",
       "dividends": "$dividends",
     };
-   
 
     var url = Uri.https(
       _baseUrl,
       '/api/quote/$symbolList',
       queryParameters,
     );
-   
 
     var response = await http.get(
       url,
       headers: headers,
     );
-    
-
 
     Map<String, dynamic> body =
         jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
 
-  
     return body;
   }
 }

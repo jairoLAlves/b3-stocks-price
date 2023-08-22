@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 
 import '../models/item_info_expansion_panel_model.dart';
@@ -35,52 +33,36 @@ class _PanelItemInfoState extends State<PanelItemInfo> {
                   children: [
                     const Text("Fechamento anterior"),
                     Text("${widget.stockInfoModel.regularMarketPreviousClose}"),
-          
                   ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    
-          const Text("Abrir"),
+                    const Text("Abrir"),
                     Text("${widget.stockInfoModel.regularMarketOpen}"),
                   ],
                 ),
-             
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    
-           const Text("Variação do Dia"),
+                    const Text("Variação do Dia"),
                     Text("${widget.stockInfoModel.regularMarketDayRange}"),
                   ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    
-           const Text("Variação de 52 semanas"),
+                    const Text("Variação de 52 semanas"),
                     Text("${widget.stockInfoModel.fiftyTwoWeekHighChange}"),
                   ],
                 ),
-              
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    
-          const Text("Volume"),
+                    const Text("Volume"),
                     Text("${widget.stockInfoModel.regularMarketVolume}"),
                   ],
                 ),
-
-                
-                    
-                    
-                   
-                   
-                    
-                   
-               
               ],
             ),
           ),
@@ -98,12 +80,10 @@ class _PanelItemInfoState extends State<PanelItemInfo> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Center(
       child: Container(
         constraints: const BoxConstraints(
           maxWidth: 700,
-          
         ),
         margin: const EdgeInsets.all(8),
         child: Column(

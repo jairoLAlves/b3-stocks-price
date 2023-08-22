@@ -35,6 +35,8 @@ test/
 .pub-cache/
 .pub/
 /build/
+/windows/
+/android/
 
 # Symbolication related
 app.*.symbols

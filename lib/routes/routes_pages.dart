@@ -1,6 +1,6 @@
 class RoutesPages {
-  static const String HOME = '/';
-  static const String STOCKSSEARCH = '/stocks_search';
-  static const String STOCKDETAIL = '/stock_detail';
-  static const String SETTINGS = '/settings';
+  static const String home = '/';
+  static const String stocksSearch = '/stocks_search';
+  static const String stockDetail = '/stock_detail';
+  static const String settings = '/settings';
 }

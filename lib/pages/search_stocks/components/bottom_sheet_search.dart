@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'dropdown_menu_item_sectors.dart';
 import 'dropdown_menu_item_sorted.dart';
 
-
 class BottomSheetSearch extends StatelessWidget {
   final void Function(sectors sector) onActionSector;
   final void Function(StocksSortBy value) onActionSorted;
@@ -47,7 +46,7 @@ class BottomSheetSearch extends StatelessWidget {
     StocksSortBy.stock,
   ];
 
-   BottomSheetSearch({
+  BottomSheetSearch({
     required this.onActionSector,
     required this.onActionSorted,
     required this.sector,
@@ -87,7 +86,7 @@ class BottomSheetSearch extends StatelessWidget {
                     autofocus: true,
                     // dropdownColor: Colors.black26,
                     //focusColor: Colors.grey,
-                    borderRadius: BorderRadius.circular(10),
+                    //borderRadius: BorderRadius.circular(10),
                     alignment: Alignment.center,
                     //menuMaxHeight: MediaQuery.of(context).size.height * 0.7,
                     //
@@ -126,7 +125,7 @@ class BottomSheetSearch extends StatelessWidget {
                       autofocus: true,
                       // dropdownColor: Colors.black26,
                       //  focusColor: Colors.grey,
-                      borderRadius: BorderRadius.circular(10),
+                      // borderRadius: BorderRadius.circular(10),
                       alignment: Alignment.center,
                       // menuMaxHeight: MediaQuery.of(context).size.height * 0.7,
                       //

@@ -1,4 +1,4 @@
-import 'package:b3_price_stocks/components/navigation_drawer_principal.dart';
+import 'package:b3_price_stocks/components/menu/navigation_drawer_principal.dart';
 import 'package:b3_price_stocks/extensions/stocks_extensions.dart';
 import 'package:b3_price_stocks/model/stock.dart';
 import 'package:b3_price_stocks/providers/stocks_provider.dart';
@@ -20,8 +20,8 @@ class StocksSearchPage extends StatefulWidget {
 }
 
 class _StocksSearchPageState extends State<StocksSearchPage> {
-  late  StocksProvider stocksProvider;
-   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey =
+  late StocksProvider stocksProvider;
+  final GlobalKey<RefreshIndicatorState> refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
 
   @override
@@ -33,22 +33,14 @@ class _StocksSearchPageState extends State<StocksSearchPage> {
           stocksProvider.listStocks.value.stockSymbolList();
     });
 
-
-   
-
     stocksProvider.loadStocks();
   }
-
-  
-
-
-
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    stocksProvider.dispose();
+    // stocksProvider.dispose();
   }
 
   Widget _start() {
@@ -94,7 +86,6 @@ class _StocksSearchPageState extends State<StocksSearchPage> {
           case StatusGetStocks.error:
             return _error(stocksProvider.loadStocks);
         }
-        ;
       },
     );
   }

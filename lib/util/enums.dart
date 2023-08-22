@@ -1,16 +1,12 @@
+// ignore_for_file: constant_identifier_names, camel_case_types
 
-
-enum StatusGetStocks{
-start, loading, success, error
-}
+enum StatusGetStocks { start, loading, success, error }
 
 enum TypesGraphic {
   hiloOpenClose,
   candle,
   line,
 }
-
-
 
 enum sectors {
   Communications, //Comunicações,
@@ -59,9 +55,9 @@ enum StocksSortBy {
 enum ValidRangesEnum {
   one_d,
   five_d,
-  one_m,
-  three_m,
-  six_m,
+  one_mo,
+  three_mo,
+  six_mo,
   one_y,
   two_y,
   five_y,
@@ -69,44 +65,54 @@ enum ValidRangesEnum {
   ytd,
   max,
 }
+enum ValidIntervalEnum  {
+  one_m,
+  tow_m,
+  five_m,
+  fifteen_m,
+  thirty_m,
+  sixty_m,
+  ninety_m,
+  one_h,
+  one_d,
+  five_d,
+  one_wk,
+  one_mo,
+  three_mo,
 
-String? getValidRangeString(ValidRangesEnum validRangesEnum) {
-  const validRangesList = <String>[
-    "1d",
-    "5d",
-    "1mo",
-    "3mo",
-    "6mo",
-    "1y",
-    "2y",
-    "5y",
-    "10y",
-    "ytd",
-    "max"
-  ];
-
-  switch (validRangesEnum) {
-    case ValidRangesEnum.one_d:
-      return validRangesList[0];
-    case ValidRangesEnum.five_d:
-      return validRangesList[1];
-    case ValidRangesEnum.one_m:
-      return validRangesList[2];
-    case ValidRangesEnum.three_m:
-      return validRangesList[3];
-    case ValidRangesEnum.six_m:
-      return validRangesList[4];
-    case ValidRangesEnum.one_y:
-      return validRangesList[5];
-    case ValidRangesEnum.two_y:
-      return validRangesList[6];
-    case ValidRangesEnum.five_y:
-      return validRangesList[7];
-    case ValidRangesEnum.ten_y:
-      return validRangesList[8];
-    case ValidRangesEnum.ytd:
-      return validRangesList[9];
-    case ValidRangesEnum.max:
-      return validRangesList[10];
-  }
 }
+
+
+
+
+String getValidIntervalString(ValidIntervalEnum validIntervalEnum) =>
+    switch (validIntervalEnum) {
+      ValidIntervalEnum.one_m => "1m",
+      ValidIntervalEnum.tow_m => "2m",
+      ValidIntervalEnum.five_m => "5m",
+      ValidIntervalEnum.fifteen_m => "15m",
+      ValidIntervalEnum.thirty_m => "30m",
+      ValidIntervalEnum.sixty_m => "60m",
+      ValidIntervalEnum.ninety_m => "90m",
+      ValidIntervalEnum.one_h => "1h",
+      ValidIntervalEnum.one_d => "1d",
+      ValidIntervalEnum.five_d => "5d",
+      ValidIntervalEnum.one_wk => "1wk",
+      ValidIntervalEnum.one_mo => "1mo",
+      ValidIntervalEnum.three_mo => "3mo",
+      
+    };
+String getValidRangeString(ValidRangesEnum validRangesEnum) =>
+    switch (validRangesEnum) {
+      ValidRangesEnum.one_d => "1d",
+      ValidRangesEnum.five_d => "5d",
+      ValidRangesEnum.one_mo => "1mo",
+      ValidRangesEnum.three_mo => "3mo",
+      ValidRangesEnum.six_mo => "6mo",
+      ValidRangesEnum.one_y => "1y",
+      ValidRangesEnum.two_y => "2y",
+      ValidRangesEnum.five_y => "5y",
+      ValidRangesEnum.ten_y => "10y",
+      ValidRangesEnum.ytd => "ytd",
+      ValidRangesEnum.max => "max",
+    };

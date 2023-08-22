@@ -1,7 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+
 import '../util/enums.dart';
 import 'dividends_data.dart';
 import 'historical_data_price.dart';
+import 'range_interval.dart';
 
 class StockInfoModel {
   ///símbolo
@@ -9,71 +11,102 @@ class StockInfoModel {
 
   ///nome curto
   String? shortName;
+
   ///nome longo
   String? longName;
+
   ///moeda
   String? currency;
+
   ///preço normal de mercado
   num? regularMarketPrice;
+
   ///alta regular do dia de mercado
   num? regularMarketDayHigh;
+
   ///baixa regular do dia de mercado
   num? regularMarketDayLow;
-  ///intervalo regular do dia de mercado 
+
+  ///intervalo regular do dia de mercado
   String? regularMarketDayRange;
+
   ///mudança regular do mercado
   num? regularMarketChange;
+
   ///porcentagem regular de mudança de mercado
   num? regularMarketChangePercent;
+
   ///horário regular do mercado
   String? regularMarketTime;
-  ///valor de mercado 
+
+  ///valor de mercado
   num? marketCap;
-  ///volume de mercado regular 
+
+  ///volume de mercado regular
   num? regularMarketVolume;
-  ///Mercado regular Fechamento anterior 
+
+  ///Mercado regular Fechamento anterior
   num? regularMarketPreviousClose;
+
   ///regular mercado aberto
   num? regularMarketOpen;
+
   ///volume diário médio 10 dias
   num? averageDailyVolume10Day;
+
   ///volume diário médio 3 meses
   num? averageDailyVolume3Month;
+
   ///cinquenta Mudança baixa de duas semanas
   num? fiftyTwoWeekLowChange;
+
   ///cinquenta Intervalo de duas semanas
   String? fiftyTwoWeekRange;
+
   ///cinquenta Mudança alta de duas semanas
   num? fiftyTwoWeekHighChange;
+
   ///cinquenta por cento de mudança alta de duas semanas
   num? fiftyTwoWeekHighChangePercent;
+
   ///cinquenta Duas semanas baixa
   num? fiftyTwoWeekLow;
+
   ///cinquenta Duas semanas de altura
   num? fiftyTwoWeekHigh;
+
   ///Média de duzentos dias
   num? twoHundredDayAverage;
+
   ///Mudança média de duzentos dias
   num? twoHundredDayAverageChange;
+
   ///Porcentagem de variação média de duzentos dias
   num? twoHundredDayAverageChangePercent;
+
   ///intervalos válidos
   List<String>? validRanges;
+
   ///preço de dados históricos
   List<HistoricalDataPrice>? historicalDataPrice;
+
+
+
   ///preço Ganhos
   num? priceEarnings;
+
   ///lucro por ação
   num? earningsPerShare;
+
   ///URL do logotipo
   String? logourl;
-  ///dados de dividendos 
+
+  ///dados de dividendos
   DividendsData? dividendsData;
 
-  ValidRangesEnum  rangeChip = ValidRangesEnum.five_d;
+  ValidRangesEnum rangeChip = ValidRangesEnum.five_d;
 
-
-
+  List<RangeInterval>? listHistoricalDataPrice;
 
   StockInfoModel(
       {this.symbol,
@@ -109,10 +142,44 @@ class StockInfoModel {
       this.logourl,
       this.dividendsData});
 
+  void addOrUpdateListHistoricalDataPrice(
+    List<RangeInterval> newListRangeInterval,
+  ) {
+    if (listHistoricalDataPrice != null ) {
+      for (var newRangeInterval in newListRangeInterval) {
+        if (!listHistoricalDataPrice!.contains(newRangeInterval)) {
+          listHistoricalDataPrice!.add(newRangeInterval);
+        } else {
+          listHistoricalDataPrice!.remove(newRangeInterval);
+          listHistoricalDataPrice!.add(newRangeInterval);
+        }
+      }
+    } else {
+      listHistoricalDataPrice = newListRangeInterval;
+    }
+  }
+
+  List<HistoricalDataPrice> getHistoricalDataPrice({
+    required ValidRangesEnum range,
+    required ValidIntervalEnum interval,
+  }) {
+    if (listHistoricalDataPrice != null) {
+      for (RangeInterval rangeInterval in listHistoricalDataPrice!) {
+        if (rangeInterval.interval == interval &&
+            rangeInterval.range == range) {
+          return rangeInterval.historicalDataPrice;
+        }
+      }
+    }
+
+    return <HistoricalDataPrice>[];
+  }
+
   StockInfoModel.fromJson(Map<String, dynamic> json) {
     // json.forEach((key, value) {
     //   print("$key, $value");
     // });
+
     symbol = json['symbol'];
     shortName = json['shortName'];
     longName = json['longName'];
@@ -199,39 +266,54 @@ class StockInfoModel {
   }
 
   @override
+  bool operator ==(covariant StockInfoModel other) {
+    if (identical(this, other)) return true;
+
+    return other.symbol == symbol;
+  }
+
+  @override
+  int get hashCode {
+    return symbol.hashCode;
+  }
+
+  @override
   String toString() {
-    return """{
-    symbol: $symbol, \n
-    shortName: $shortName, \n
-    longName: $longName, \n
-    currency: $currency, \n
-    regularMarketPrice: $regularMarketPrice, \n
-    regularMarketDayHigh: $regularMarketDayHigh, \n
-    regularMarketDayLow: $regularMarketDayLow, \n
-    regularMarketDayRange: $regularMarketDayRange, \n
-    regularMarketChange: $regularMarketChange, \n
-    regularMarketChangePercent: $regularMarketChangePercent, \n
-    regularMarketTime: $regularMarketTime, \n
-    marketCap: $marketCap, \n
-    regularMarketVolume: $regularMarketVolume, \n
-    regularMarketPreviousClose: $regularMarketPreviousClose, \n
-    regularMarketOpen: $regularMarketOpen, \n
-    averageDailyVolume10Day: $averageDailyVolume10Day, \n
-    averageDailyVolume3Month: $averageDailyVolume3Month, \n
-    fiftyTwoWeekLowChange: $fiftyTwoWeekLowChange, \n
-    fiftyTwoWeekRange: $fiftyTwoWeekRange, \n
-    fiftyTwoWeekHighChange: $fiftyTwoWeekHighChange, \n
-    fiftyTwoWeekHighChangePercent: $fiftyTwoWeekHighChangePercent, \n
-    fiftyTwoWeekLow: $fiftyTwoWeekLow, \n
-    fiftyTwoWeekHigh: $fiftyTwoWeekHigh, \n
-    twoHundredDayAverage: $twoHundredDayAverage, \n
-    twoHundredDayAverageChange: $twoHundredDayAverageChange, \n
-    twoHundredDayAverageChangePercent: $twoHundredDayAverageChangePercent, \n
-    validRanges: $validRanges, \n
-    historicalDataPrice: $historicalDataPrice, \n
-    priceEarnings: $priceEarnings, \n
-    earningsPerShare: $earningsPerShare, \n
-    logourl: $logourl, \n
-    dividendsData: $dividendsData}""";
+    return '''
+    StockInfoModel(symbol: $symbol,
+    shortName: $shortName,
+    longName: $longName,
+    currency: $currency,
+    regularMarketPrice: $regularMarketPrice,
+    regularMarketDayHigh: $regularMarketDayHigh,
+    regularMarketDayLow: $regularMarketDayLow,
+    regularMarketDayRange: $regularMarketDayRange,
+    regularMarketChange: $regularMarketChange,
+    regularMarketChangePercent: $regularMarketChangePercent,
+    regularMarketTime: $regularMarketTime,
+    marketCap: $marketCap,
+    regularMarketVolume: $regularMarketVolume,
+    regularMarketPreviousClose: $regularMarketPreviousClose,
+    regularMarketOpen: $regularMarketOpen,
+    averageDailyVolume10Day: $averageDailyVolume10Day,
+    averageDailyVolume3Month: $averageDailyVolume3Month,
+    fiftyTwoWeekLowChange: $fiftyTwoWeekLowChange,
+    fiftyTwoWeekRange: $fiftyTwoWeekRange,
+    fiftyTwoWeekHighChange: $fiftyTwoWeekHighChange,
+    fiftyTwoWeekHighChangePercent: $fiftyTwoWeekHighChangePercent,
+    fiftyTwoWeekLow: $fiftyTwoWeekLow,
+    fiftyTwoWeekHigh: $fiftyTwoWeekHigh,
+    twoHundredDayAverage: $twoHundredDayAverage,
+    twoHundredDayAverageChange: $twoHundredDayAverageChange,
+    twoHundredDayAverageChangePercent: $twoHundredDayAverageChangePercent,
+    validRanges: $validRanges,
+    historicalDataPrice: $historicalDataPrice,
+    priceEarnings: $priceEarnings,
+    earningsPerShare: $earningsPerShare,
+    logourl: $logourl,
+    dividendsData: $dividendsData,
+    rangeChip: $rangeChip,
+    listHistoricalDataPrice: size:${listHistoricalDataPrice?.length}  $listHistoricalDataPrice
+    ''';
   }
 }

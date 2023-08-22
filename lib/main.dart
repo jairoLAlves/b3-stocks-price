@@ -61,12 +61,12 @@ class MyApp extends StatelessWidget {
               themeMode: value ? ThemeMode.light : ThemeMode.dark,
               theme: lightTheme,
               darkTheme: dartTheme,
-              initialRoute: RoutesPages.HOME,
+              initialRoute: RoutesPages.home,
               routes: {
-                RoutesPages.HOME: (ctx) => const HomePage(),
-                RoutesPages.STOCKSSEARCH: (ctx) => const StocksSearchPage(),
-                RoutesPages.STOCKDETAIL: (ctx) => const StockDetailPage(),
-                RoutesPages.SETTINGS: (ctx) => const SettingsPage(),
+                RoutesPages.home: (ctx) => const HomePage(),
+                RoutesPages.stocksSearch: (ctx) => const StocksSearchPage(),
+                RoutesPages.stockDetail: (ctx) => const StockDetailPage(),
+                RoutesPages.settings: (ctx) => const SettingsPage(),
               },
             );
           },

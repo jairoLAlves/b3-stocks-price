@@ -1,5 +1,9 @@
-import 'package:b3_price_stocks/model/historical_data_price.dart';
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+
+import 'dart:math';
+
 import 'package:b3_price_stocks/model/stock.dart';
+import '../model/historical_data_and_chart_semple_date.dart';
 import '../util/enums.dart';
 import 'package:collection/collection.dart';
 
@@ -44,49 +48,58 @@ extension DividirListaString on List<String> {
   }
 }
 
-extension GetListNumFilter on List<HistoricalDataPrice> {
-  List<num> getListNumFilter(
-      [PriceTipes priceTipes = PriceTipes.close, bool isReversed = true]) {
-    var listaRetorno = <num>[];
-    var listaNull = <num?>[];
+extension GetMinMaxMedia on List<HistoricalDataAndChartSampleDate> {
+  ({double min, double max, double media}) getMinMaxMedia() {
+    List<num> maxList = getListNumFilter(PriceTipes.high, false);
+    List<num> minList = getListNumFilter(PriceTipes.low, false);
 
-    switch (priceTipes) {
-      case PriceTipes.close:
-        listaNull = map((numero) {
-          return numero.close;
-        }).toList();
+  
 
-        break;
+    double _max = 0;
+    double _min = 0;
 
-      case PriceTipes.open:
-        listaNull = map((numero) {
-          return numero.open;
-        }).toList();
-
-        break;
-
-      case PriceTipes.high:
-        listaNull = map((numero) {
-          return numero.high;
-        }).toList();
-
-        break;
-
-      case PriceTipes.low:
-        listaNull = map((numero) {
-          return numero.low;
-        }).toList();
-
-        break;
+    if (maxList.isNotEmpty) {
+       _max = double.parse('${maxList.reduce((a, b) => max(a, b))}');
+    }
+    if (minList.isNotEmpty) {
+       _min = double.parse('${minList.reduce((a, b) => min(a, b))}');
     }
 
-    //print(listaNull);
+    double media = (_max + _min);
 
-    listaRetorno = listaNull.whereType<num>().toList();
+    if (media > 0) media /= 2;
 
-    if (isReversed) listaRetorno.reversed;
+    return (min: _min, max: _max, media: media);
+  }
+}
 
-    return listaRetorno;
+extension GetListNumFilter on List<HistoricalDataAndChartSampleDate> {
+  List<num> getListNumFilter([
+    PriceTipes priceTipes = PriceTipes.close,
+    bool isReversed = true,
+  ]) {
+    List<num> listReturn = switch (priceTipes) {
+      PriceTipes.close => map((numero) {
+          return numero.close;
+        }).toList(),
+      PriceTipes.open => map((numero) {
+          return numero.open;
+        }).toList(),
+      PriceTipes.high => map((numero) {
+          return numero.high;
+        }).toList(),
+      PriceTipes.low => map((numero) {
+          return numero.low;
+        }).toList(),
+    }
+        .whereType<num>()
+        .toList();
+
+    //print(listReturn);
+
+    if (isReversed) listReturn.reversed;
+
+    return listReturn;
   }
 }
 
@@ -129,10 +142,10 @@ extension SortOrderStocks on List<Stock> {
       case StocksSortBy.market_cap_basic:
         sortOrder = !sortOrder;
         sort((a, b) {
-          var market_cap1 = a.market_cap;
-          var market_cap2 = b.market_cap;
+          var marketCap1 = a.market_cap;
+          var marketCap2 = b.market_cap;
 
-          return market_cap1.compareTo(market_cap2);
+          return marketCap1.compareTo(marketCap2);
         });
         break;
 
